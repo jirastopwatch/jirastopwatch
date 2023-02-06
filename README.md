@@ -2,13 +2,13 @@
 
 A Windows desktop tool for recording time spent on different Jira tasks.
 
-![](http://jirastopwatch.com/img/screen2.png)
+![](docs/img/screen2.png)
 
 ## Features, download and installation:
 
-Read all about features on [the product homepage](http://jirastopwatch.com).
+Read all about features on [the product homepage](https://github.com/norwd/jirastopwatch/wiki).
 
-Documentaion about [how to download, install, and use Jira StopWatch](http://jirastopwatch.com/doc/) is also available.
+Documentaion about [how to download, install, and use Jira StopWatch](https://github.com/norwd/jirastopwatch/wiki) is also available.
 
 Feature-requests are more than welcome :-)
 
