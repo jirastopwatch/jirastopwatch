@@ -20,7 +20,7 @@ Anyone with a MacOSX available: I would love to know if everything works out of 
 
 ## License
 
-Apache License version 2.0 - please read [LICENSE.txt](LICENSE.txt)
+Apache License version 2.0 - please read [LICENSE.md](LICENSE.md)
 
 ## Feedback
 
