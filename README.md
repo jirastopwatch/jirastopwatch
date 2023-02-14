@@ -6,21 +6,21 @@ A Windows desktop tool for recording time spent on different Jira tasks.
 
 ## Features, download and installation:
 
-Read all about features on [the product homepage](https://github.com/norwd/jirastopwatch/wiki).
+Read all about features on the product [homepage].
 
-Documentaion about [how to download, install, and use Jira StopWatch](https://github.com/norwd/jirastopwatch/wiki) is also available.
+There is [documentation] available for [installing] Jira StopWatch and walk-throughs of both [basic setup] and [usage][basic usage], and [advanced settings] including [keyboard shortcuts].
 
-Feature-requests are more than welcome :-)
+Feature requests, [contributions], and/or [questions and feedback] are more than welcome :-)
 
 ## Mac OSX and Linux users
 
-Jira StopWatch has been compiled and tested to work on Linux Mint 17.0 with the [Xamarin packages](http://www.mono-project.com/download/#download-lin).
+Jira StopWatch has been compiled and tested to work on Linux Mint 17.0 with the [Xamarin] packages.
 
 Anyone with a MacOSX available: I would love to know if everything works out of the box.
 
 ## License
 
-Apache License version 2.0 - please read [LICENSE.md](LICENSE.md)
+Apache License version 2.0 - please read the [license file][LICENSE].
 
 ## Feedback
 
@@ -28,9 +28,9 @@ Bug reports, feature requests etc. are welcome. Please use Github for this.
 
 ## Externals
 
-The application depend on [RestSharp](https://github.com/restsharp/RestSharp) for all communication with Jira.
+The application depend on [RestSharp] for all communication with Jira.
 
-All icons on buttons were downloaded from [Icons8](https://icons8.com).
+All icons on buttons were downloaded from [Icons8].
 
 ## Changelog
 
@@ -99,7 +99,7 @@ All icons on buttons were downloaded from [Icons8](https://icons8.com).
 
 #### New features/improvements
 
-- When submitting worklog, StartTime will also be set. The value will be equal to "now minus logged work-time". Kudos to [Lee Houghton](https://github.com/asztal) for making this PR.
+- When submitting worklog, StartTime will also be set. The value will be equal to "now minus logged work-time". Kudos to [Lee Houghton] for making this PR.
 - UI now handles Windows' zoom settings much better.
 - Timers and settings are now saved continously instead of only at program exit. So no data loss if you get power-outs or PC crash.
 - Issue dropdown box will now retrieve up to 200 issues, instead of the API-default of 50.
@@ -236,6 +236,29 @@ Thanks goes to [Seth Feldkamp](https://github.com/sfeldkamp) for the ideas to bo
 - First release with setup program
 
 <!-- LINKS -->
+
+[Xamarin]: http://www.mono-project.com/download/#download-lin
+[RestSharp]: https://github.com/restsharp/RestSharp
+[Icons8]: https://icons8.com
+[LICENSE]: LICENSE.md
+
+<!-- DOCUMENTATION -->
+
+[homepage]: https://jirastopwatch.github.io
+[documentation]: https://jirastopwatch.github.io/doc
+[installing]: https://jirastopwatch.github.io/doc/#installing
+[basic setup]: https://jirastopwatch.github.io/doc/#basicsetup
+[basic usage]: https://jirastopwatch.github.io/doc/#basicusage
+[keyboard shortcuts]: https://jirastopwatch.github.io/doc/#keyboard
+[advanced settings]: https://jirastopwatch.github.io/doc/#advsettings
+[questions and feedback]: https://jirastopwatch.github.io/doc/#questions
+[contributions]: https://github.com/jirastopwatch/.github/blob/main/CONTRIBUTING.md
+
+<!-- PEOPLE -->
+
+[Lee Houghton]: https://github.com/asztal
+
+<!-- RELEASES -->
 
 [1.0.1]: https://github.com/norwd/jirastopwatch/releases/tag/1.0.1
 [1.0.2]: https://github.com/norwd/jirastopwatch/releases/tag/1.0.2
