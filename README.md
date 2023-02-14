@@ -2,7 +2,7 @@
 
 A Windows desktop tool for recording time spent on different Jira tasks.
 
-![](docs/img/screen2.png)
+![screenshot 1]
 
 ## Features, download and installation:
 
@@ -254,9 +254,18 @@ Thanks goes to [Seth Feldkamp](https://github.com/sfeldkamp) for the ideas to bo
 [questions and feedback]: https://jirastopwatch.github.io/doc/#questions
 [contributions]: https://github.com/jirastopwatch/.github/blob/main/CONTRIBUTING.md
 
+<!-- IMAGES -->
+
+[jumbotron background]: https://jirastopwatch.github.io/img/jumbotronbackground.jpg
+[screenshot 1]: https://jirastopwatch.github.io/img/screen1.png
+[screenshot 2]: https://jirastopwatch.github.io/img/screen2.png
+[screenshot 3]: https://jirastopwatch.github.io/img/screen3.png
+
 <!-- PEOPLE -->
 
 [Lee Houghton]: https://github.com/asztal
+[Y. Meyer-Norwood]: https://github.com/norwd
+[Dan Tulloh]: https://github.com/tulleuchen
 
 <!-- RELEASES -->
 
