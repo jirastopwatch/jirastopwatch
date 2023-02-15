@@ -1,0 +1,26 @@
+---
+
+name: Build
+run-name: Build
+
+on: push
+
+env:
+  DOTNET_NOLOGO: 1
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+
+concurrency:
+  group: build-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-dotnet@v3
+
+      - run: dotnet restore StopWatch.sln
+      - run: nuget restore StopWatch.sln
+      - run: dotnet build --configuration Release --no-restore StopWatch.sln
+      - run: dotnet test --configuration Release --no-restore --no-build -v=detailed StopWatch.sln
