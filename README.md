@@ -211,29 +211,33 @@ Thanks goes to [Seth Feldkamp](https://github.com/sfeldkamp) for the ideas to bo
 
 - Nicer buttons + tooltips
 
-### [1.0.4] (2015-09-30)
+### [1.0.4] (2015-09-30) [^predates-current-history]
 
 #### New features/improvements
 
 - Clear summary label when issue key is empty
 
-### [1.0.3] (2015-09-28)
+### [1.0.3] (2015-09-28) [^predates-current-history]
 
 #### New features/improvements
 
 - Remember login credentials with DPAPI
 
-### [1.0.2] (2015-09-28)
+### [1.0.2] (2015-09-28) [^predates-current-history]
 
 #### New features/improvements
 
 - Integration with Jira: Async load issue summary
 
-### [1.0.1] (2015-09-25)
+### [1.0.1] (2015-09-25) [^predates-current-history]
 
 #### New features/improvements
 
 - First release with setup program
+
+<!-- FOOTNOTES -->
+
+[^predates-current-history]: This predates the current repository's history
 
 <!-- LINKS -->
 
