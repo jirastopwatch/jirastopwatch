@@ -3,14 +3,21 @@
 name: Build
 run-name: Build
 
-on: push
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - reopened
+      - synchronize
+      - ready_for_review
 
 env:
   DOTNET_NOLOGO: 1
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
 
 concurrency:
-  group: build-${{ github.ref_name }}
+  group: build-${{ github.sha }}
   cancel-in-progress: true
 
 jobs:
