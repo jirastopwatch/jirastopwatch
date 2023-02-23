@@ -20,6 +20,8 @@
  * limitations under the License.
  */
 
+using System.Windows.Forms;
+
 namespace StopWatch
 {
     public partial class AboutForm : Form
