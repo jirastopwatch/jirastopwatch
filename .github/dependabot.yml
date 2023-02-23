@@ -16,12 +16,6 @@ updates:
 
   - package-ecosystem: "nuget"
     open-pull-requests-limit: 10
-    directory: "source/StopWatchSetup"
-    schedule:
-      interval: "daily"
-
-  - package-ecosystem: "nuget"
-    open-pull-requests-limit: 10
     directory: "source/StopWatchTest"
     schedule:
       interval: "daily"
