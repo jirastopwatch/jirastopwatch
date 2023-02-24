@@ -43,12 +43,12 @@ All icons on buttons were downloaded from [Icons8].
 
 [homepage]: https://jirastopwatch.github.io
 [documentation]: https://jirastopwatch.github.io/doc
-[installing]: https://jirastopwatch.github.io/doc/#installing
-[basic setup]: https://jirastopwatch.github.io/doc/#basicsetup
-[basic usage]: https://jirastopwatch.github.io/doc/#basicusage
-[keyboard shortcuts]: https://jirastopwatch.github.io/doc/#keyboard
-[advanced settings]: https://jirastopwatch.github.io/doc/#advsettings
-[questions and feedback]: https://jirastopwatch.github.io/doc/#questions
+[installing]: https://jirastopwatch.github.io/doc#installing
+[basic setup]: https://jirastopwatch.github.io/doc#basicsetup
+[basic usage]: https://jirastopwatch.github.io/doc#basicusage
+[keyboard shortcuts]: https://jirastopwatch.github.io/doc#keyboard
+[advanced settings]: https://jirastopwatch.github.io/doc#advsettings
+[questions and feedback]: https://jirastopwatch.github.io/doc#questions
 [contributions]: https://github.com/jirastopwatch/.github/blob/main/CONTRIBUTING.md
 
 <!-- IMAGES -->
