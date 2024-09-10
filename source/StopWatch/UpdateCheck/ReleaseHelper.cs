@@ -25,14 +25,14 @@ using System.Net;
 
 namespace StopWatch
 {
-    class ReleaseHelper
+    static class ReleaseHelper
     {
         public static GithubRelease GetLatestVersion()
         {
             RestClient client = new RestClient("https://api.github.com");
-            RestRequest request = new RestRequest("/repos/carstengehling/jirastopwatch/releases/latest");
+            RestRequest request = new RestRequest("/repos/jirastopwatch/jirastopwatch/releases/latest");
 
-            IRestResponse<GithubRelease> response = client.Execute<GithubRelease>(request);
+            RestResponse<GithubRelease> response = client.Execute<GithubRelease>(request);
             if (response.StatusCode != HttpStatusCode.OK)
                 return null;
 

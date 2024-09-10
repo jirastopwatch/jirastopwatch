@@ -26,6 +26,6 @@ namespace StopWatch
 {
     internal interface IRestRequestFactory
     {
-        IRestRequest Create(string url, Method method);
+        RestRequest Create(string url, Method method);
     }
 }
