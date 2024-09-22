@@ -118,9 +118,8 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="textBox1.Text" xml:space="preserve">
-    <value>Copyright 2024 Jira StopWatch Group
-
-https://github.com/jirastopwatch/jirastopwatch
+    <value>Original creator: Copyright 2015 Carsten Gehling
+Copyright 2024 https://github.com/jirastopwatch/jirastopwatch
 
 Licensed under the Apache License, Version 2.0. This software is free to use under the terms specified in the license.</value>
   </data>

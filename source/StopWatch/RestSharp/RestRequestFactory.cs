@@ -26,7 +26,7 @@ namespace StopWatch
 {
     internal class RestRequestFactory : IRestRequestFactory
     {
-        public RestRequest Create(string url, Method method)
+        public virtual RestRequest Create(string url, Method method)
         {
             return new RestRequest(url, method);
         }

@@ -28,7 +28,7 @@ namespace StopWatch
     internal class JiraApiRequestFactory : IJiraApiRequestFactory
     {
         #region public methods
-        public JiraApiRequestFactory(RestRequestFactory restRequestFactory)
+        public JiraApiRequestFactory(IRestRequestFactory restRequestFactory)
         {
             this.restRequestFactory = restRequestFactory;
         }
@@ -140,7 +140,7 @@ namespace StopWatch
 
 
         #region private members
-        private RestRequestFactory restRequestFactory;
+        private IRestRequestFactory restRequestFactory;
         #endregion
     }
 }
