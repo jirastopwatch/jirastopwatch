@@ -676,7 +676,7 @@ namespace StopWatch
                                 latestRelease.TagName,
                                 currentVersion);
                             if (MessageBox.Show(msg, "New version available", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                                System.Diagnostics.Process.Start("https://github.com/carstengehling/jirastopwatch/releases/latest");
+                                System.Diagnostics.Process.Start("https://github.com/jirastopwatch/jirastopwatch/releases/latest");
                         }
                     );
                 }

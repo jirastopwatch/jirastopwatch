@@ -42,7 +42,7 @@ namespace StopWatch
                 cookieContainer = new CookieContainer();
 
             RestClient client = new RestClient(BaseUrl);
-            client.CookieContainer = cookieContainer;
+            //client.CookieContainer = cookieContainer;
             return client;
         }
 

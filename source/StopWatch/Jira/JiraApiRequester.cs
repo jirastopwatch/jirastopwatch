@@ -38,7 +38,7 @@ namespace StopWatch
             ErrorMessage = "";
         }
 
-        public T DoAuthenticatedRequest<T>(IRestRequest request)
+        public T DoAuthenticatedRequest<T>(RestRequest request)
             where T : new()
         {
             AddAuthHeader(request);
@@ -46,7 +46,7 @@ namespace StopWatch
             IRestClient client = restClientFactory.Create();
 
             _logger.Log(string.Format("Request: {0}", client.BuildUri(request)));
-            IRestResponse<T> response = client.Execute<T>(request);
+            RestResponse<T> response = client.Execute<T>(request);
             _logger.Log(string.Format("Response: {0} - {1}", response.StatusCode, StringHelpers.Truncate(response.Content, 100)));
 
             // If login session has expired, try to login, and then re-execute the original request
@@ -71,7 +71,7 @@ namespace StopWatch
             _apiToken = apiToken;
         }
 
-        private void AddAuthHeader(IRestRequest request)
+        private void AddAuthHeader(RestRequest request)
         {
             if (string.IsNullOrEmpty(_username) || string.IsNullOrEmpty(_apiToken))
             {
@@ -90,9 +90,31 @@ namespace StopWatch
 
     internal class RequestDeniedException : Exception
     {
+        public RequestDeniedException() : base()
+        {
+        }
+
+        public RequestDeniedException(string message) : base(message)
+        {
+        }
+
+        public RequestDeniedException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
     }
 
     internal class UsernameAndApiTokenNotSetException : Exception
     {
+        public UsernameAndApiTokenNotSetException() : base()
+        {
+        }
+
+        public UsernameAndApiTokenNotSetException(string message) : base(message)
+        {
+        }
+
+        public UsernameAndApiTokenNotSetException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
     }
 }
