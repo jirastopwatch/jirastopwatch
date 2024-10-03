@@ -1,4 +1,26 @@
-﻿namespace StopWatchTest
+/**
+ * Copyright 2023 Y. Meyer-Norwood
+ * Copyright 2020 Dan Tulloh
+ * Copyright 2016 Carsten Gehling
+ *
+ * For a full list of contributing authors, see:
+ *
+ *     https://jirastopwatch.github.io/contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+namespace StopWatchTest
 {
     using Moq;
     using NUnit.Framework;
@@ -34,7 +56,7 @@
             {
                 timeTrackingConfiguration = new TimeTrackingConfiguration()
             };
-            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<JiraConfiguration>(It.IsAny<IRestRequest>())).Returns(jiraConfig);
+            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<JiraConfiguration>(It.IsAny<RestRequest>())).Returns(jiraConfig);
             Assert.That(jiraClient.Authenticate("myuser", "myapitoken"), Is.True);
         }
 
@@ -42,7 +64,7 @@
         [Test, Description("Authenticate returns false on unsuccessful authentication")]
         public void Authenticate_OnFailure_It_Returns_False()
         {
-            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<JiraConfiguration>(It.IsAny<IRestRequest>())).Throws<RequestDeniedException>();
+            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<JiraConfiguration>(It.IsAny<RestRequest>())).Throws<RequestDeniedException>();
             Assert.That(jiraClient.Authenticate("myuser", "myapitoken"), Is.False);
         }
 
@@ -50,7 +72,7 @@
         [Test, Description("ValidateSession: On success it sets SessionValid and returns true")]
         public void ValidateSession_OnSuccess_It_Sets_SessionValid_And_Returns_True()
         {
-            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<object>(It.IsAny<IRestRequest>())).Returns(new object());
+            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<object>(It.IsAny<RestRequest>())).Returns(new object());
             Assert.That(jiraClient.ValidateSession(), Is.True);
             Assert.That(jiraClient.SessionValid, Is.True);
         }
@@ -59,7 +81,7 @@
         [Test, Description("ValidateSession: On failure it resets SessionValid and returns false")]
         public void ValidateSession_OnFailure_It_Resets_SessionValid_And_Returns_False()
         {
-            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<object>(It.IsAny<IRestRequest>())).Throws<RequestDeniedException>();
+            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<object>(It.IsAny<RestRequest>())).Throws<RequestDeniedException>();
             Assert.That(jiraClient.ValidateSession(), Is.False);
             Assert.That(jiraClient.SessionValid, Is.False);
         }
@@ -72,7 +94,7 @@
             returnData.Add(new Filter { Id = 5, Name = "Foo", Jql = "Project=Foo" });
             returnData.Add(new Filter { Id = 6, Name = "bar", Jql = "Project=Bar" });
 
-            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<List<Filter>>(It.IsAny<IRestRequest>())).Returns(returnData);
+            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<List<Filter>>(It.IsAny<RestRequest>())).Returns(returnData);
 
             Assert.That(jiraClient.GetFavoriteFilters(), Is.EqualTo(returnData));
         }
@@ -81,7 +103,7 @@
         [Test, Description("GetFavoriteFilters: On failure it returns null")]
         public void GetFavoriteFilters_OnFailure_It_Returns_Null()
         {
-            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<List<Filter>>(It.IsAny<IRestRequest>())).Throws<RequestDeniedException>();
+            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<List<Filter>>(It.IsAny<RestRequest>())).Throws<RequestDeniedException>();
             Assert.That(jiraClient.GetFavoriteFilters(), Is.Null);
         }
 
@@ -96,7 +118,7 @@
             returnData.Issues.Add(new Issue { Key = "FOO-1", Fields = new IssueFields { Summary = "Summary for FOO-1" } });
             returnData.Issues.Add(new Issue { Key = "FOO-2", Fields = new IssueFields { Summary = "Summary for FOO-2" } });
 
-            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<SearchResult>(It.IsAny<IRestRequest>())).Returns(returnData);
+            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<SearchResult>(It.IsAny<RestRequest>())).Returns(returnData);
 
             Assert.That(jiraClient.GetIssuesByJQL("testjql"), Is.EqualTo(returnData));
         }
@@ -105,7 +127,7 @@
         [Test, Description("GetIssuesByJQL: On failure it returns null")]
         public void GetIssuesByJQL_OnFailure_It_Returns_Null()
         {
-            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<List<Filter>>(It.IsAny<IRestRequest>())).Throws<RequestDeniedException>();
+            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<List<Filter>>(It.IsAny<RestRequest>())).Throws<RequestDeniedException>();
             Assert.That(jiraClient.GetIssuesByJQL("testjql"), Is.Null);
         }
 
@@ -121,7 +143,7 @@
                 }
             };
 
-            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<Issue>(It.IsAny<IRestRequest>())).Returns(returnData);
+            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<Issue>(It.IsAny<RestRequest>())).Returns(returnData);
 
             Assert.That(jiraClient.GetIssueSummary("DG-42", false), Is.EqualTo(returnData.Fields.Summary));
         }
@@ -130,7 +152,7 @@
         [Test, Description("GetIssueSummary: On failure it returns empty string")]
         public void GetIssueSummary_OnFailure_It_Returns_Empty_String()
         {
-            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<Issue>(It.IsAny<IRestRequest>())).Throws<RequestDeniedException>();
+            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<Issue>(It.IsAny<RestRequest>())).Throws<RequestDeniedException>();
             Assert.That(jiraClient.GetIssueSummary("DG-42", false), Is.EqualTo(""));
         }
 
@@ -150,7 +172,7 @@
                 }
             };
 
-            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<Issue>(It.IsAny<IRestRequest>())).Returns(returnData);
+            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<Issue>(It.IsAny<RestRequest>())).Returns(returnData);
 
             Assert.That(jiraClient.GetIssueTimetracking("DG-42"), Is.EqualTo(returnData.Fields.Timetracking));
         }
@@ -159,7 +181,7 @@
         [Test, Description("GetIssueTimetracking: On failure it returns null")]
         public void GetIssueTimetracking_OnFailure_It_Returns_Empty_String()
         {
-            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<Issue>(It.IsAny<IRestRequest>())).Throws<RequestDeniedException>();
+            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<Issue>(It.IsAny<RestRequest>())).Throws<RequestDeniedException>();
             Assert.That(jiraClient.GetIssueTimetracking("DG-42"), Is.Null);
         }
 
@@ -167,7 +189,7 @@
         [Test, Description("PostWorklog: On success it returns true")]
         public void PostWorklog_OnSuccess_It_Returns_True()
         {
-            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<object>(It.IsAny<IRestRequest>())).Returns(new object());
+            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<object>(It.IsAny<RestRequest>())).Returns(new object());
 
             Assert.That(jiraClient.PostWorklog("DG-42", DateTimeOffset.UtcNow, new TimeSpan(1, 20, 0), "Time is an illusion", EstimateUpdateMethods.Auto, null), Is.True);
         }
@@ -176,7 +198,7 @@
         [Test, Description("PostWorklog: On failure it returns false")]
         public void PostWorklog_OnFailure_It_Returns_False()
         {
-            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<object>(It.IsAny<IRestRequest>())).Throws<RequestDeniedException>();
+            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<object>(It.IsAny<RestRequest>())).Throws<RequestDeniedException>();
             Assert.That(jiraClient.PostWorklog("DG-42", DateTimeOffset.UtcNow, new TimeSpan(2, 10, 0), "Lunchtime doubly so", EstimateUpdateMethods.Auto, null), Is.False);
         }
 
@@ -184,7 +206,7 @@
         [Test, Description("PostComment: On success it returns true")]
         public void PostComment_OnSuccess_It_Returns_True()
         {
-            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<object>(It.IsAny<IRestRequest>())).Returns(new object());
+            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<object>(It.IsAny<RestRequest>())).Returns(new object());
 
             Assert.That(jiraClient.PostComment("DG-42", "Time is an illusion"), Is.True);
         }
@@ -193,7 +215,7 @@
         [Test, Description("PostComment: On failure it returns false")]
         public void PostComment_OnFailure_It_Returns_False()
         {
-            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<object>(It.IsAny<IRestRequest>())).Throws<RequestDeniedException>();
+            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<object>(It.IsAny<RestRequest>())).Throws<RequestDeniedException>();
             Assert.That(jiraClient.PostComment("DG-42", "Lunchtime doubly so"), Is.False);
         }
 
@@ -210,7 +232,7 @@
             returnData.Transitions.Add(new Transition { Id = 8, Name = "Trans1" });
             returnData.Transitions.Add(new Transition { Id = 9, Name = "Trans2" });
 
-            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<AvailableTransitions>(It.IsAny<IRestRequest>())).Returns(returnData);
+            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<AvailableTransitions>(It.IsAny<RestRequest>())).Returns(returnData);
 
             Assert.That(jiraClient.GetAvailableTransitions("KEY-3"), Is.EqualTo(returnData));
         }
@@ -219,7 +241,7 @@
         [Test, Description("GetAvailableTransitions: On failure it returns null")]
         public void GetAvailableTransitions_OnFailure_It_Returns_Null()
         {
-            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<AvailableTransitions>(It.IsAny<IRestRequest>())).Throws<RequestDeniedException>();
+            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<AvailableTransitions>(It.IsAny<RestRequest>())).Throws<RequestDeniedException>();
             Assert.That(jiraClient.GetAvailableTransitions("KEY-3"), Is.Null);
         }
 
@@ -227,7 +249,7 @@
         [Test, Description("DoTransition: On success it returns true")]
         public void DoTransition_OnSuccess_It_Returns_True()
         {
-            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<object>(It.IsAny<IRestRequest>())).Returns(new object());
+            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<object>(It.IsAny<RestRequest>())).Returns(new object());
 
             Assert.That(jiraClient.DoTransition("DG-42", 6), Is.True);
         }
@@ -236,7 +258,7 @@
         [Test, Description("DoTransition: On failure it returns false")]
         public void DoTransition_OnFailure_It_Returns_False()
         {
-            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<object>(It.IsAny<IRestRequest>())).Throws<RequestDeniedException>();
+            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<object>(It.IsAny<RestRequest>())).Throws<RequestDeniedException>();
             Assert.That(jiraClient.DoTransition("DG-42", 6), Is.False);
         }
 
