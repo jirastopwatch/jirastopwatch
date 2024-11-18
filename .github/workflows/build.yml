@@ -69,6 +69,7 @@ jobs:
         with:
           name: test-results-${{ join(matrix.*, '-') }}
           path: '**/*.trx'
+          if-no-files-found: error
 
   publish-test-results:
     if: always()
