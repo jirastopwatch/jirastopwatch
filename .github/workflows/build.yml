@@ -37,25 +37,31 @@ jobs:
           - Debug
           - Release
     steps:
-      - name: "Checkout"
+      - id: checkout
+        name: "Checkout"
         uses: actions/checkout@v3
 
-      - name: "Setup .NET"
+      - id: setup-dotnet
+        name: "Setup .NET"
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 6.0.x
 
-      - name: "Restore"
+      - id: restore
+        name: "Restore"
         run: nuget restore "${SOLUTION_NAME}"
 
-      - name: "Build"
+      - id: build
+        name: "Build"
         run: dotnet build --configuration ${{ matrix.configuration }} --no-restore "${SOLUTION_NAME}"
 
-      - name: "Test"
+      - id: test
+        name: "Test"
         run: dotnet test --configuration ${{ matrix.configuration }} --no-restore --no-build --logger "${TEST_LOGGER}" "${SOLUTION_NAME}"
 
-      - name: "Archive Test Results"
-        if: always()
+      - id: upload-test-artifact
+        if: always() && steps.test.outcome != 'skipped'
+        name: "Archive Test Results"
         uses: actions/upload-artifact@v4
         with:
           name: Test Results (${{ matrix.configuration }})
