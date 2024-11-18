@@ -1,0 +1,4 @@
+# .NET run settings are just XML
+.runsettings linguist-language=XML
+**/.runsettings linguist-language=XML
+**/*.runsettings linguist-language=XML
