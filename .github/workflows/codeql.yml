@@ -1,4 +1,7 @@
+---
+
 name: "CodeQL"
+run-name: "CodeQL"
 
 on:
   push:
@@ -10,41 +13,45 @@ on:
   schedule:
     - cron: '0 0 1 * *'
 
+permissions:
+  actions: read
+  contents: read
+  security-events: write
+
+env:
+  DOTNET_NOLOGO: 1
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  CONFIGURATION: 'Release'
+  SOLUTION_NAME: 'StopWatch.sln'
+  SETTINGS_FILE: '.runsettings'
+  TEST_LOGGER: 'trx;logfilename=testResults.trx'
+
 jobs:
   analyze:
-    name: Analyze
+    name: "Analyze"
     runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [ 'csharp' ]
-
     steps:
-    - name: Checkout repository
+    - name: "Checkout"
       uses: actions/checkout@v4
 
-    - name: Initialize CodeQL
+    - name: "Initialize CodeQL"
       uses: github/codeql-action/init@v3
       with:
-        languages: ${{ matrix.language }}
+        languages: csharp
 
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v3
+    - name: "Setup .NET"
+      uses: actions/setup-dotnet@v4
 
-    # ℹ️ Command-line programs to run using the OS shell.
-    # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
-    #   If the Autobuild fails above, remove it and uncomment the following three lines.
-    #   modify them (or add more) to build your code if your project, please refer to the EXAMPLE below for guidance.
-    # - run: |
-    #     echo "Run, Build Application using script"
-    #     ./location_of_script_within_repo/buildscript.sh
+    - name: "Dotnet Restore"
+      run: dotnet restore "${SOLUTION_NAME}"
 
-    - name: Perform CodeQL Analysis
+    - name: "Nuget Restore"
+      run: nuget restore "${SOLUTION_NAME}"
+
+    - name: "Build"
+      run: dotnet build --configuration "${CONFIGURATION}" --no-restore "${SOLUTION_NAME}"
+
+    - name: "Perform CodeQL Analysis"
       uses: github/codeql-action/analyze@v3
       with:
-        category: "/language:${{matrix.language}}"
+        category: "/language:csharp"
