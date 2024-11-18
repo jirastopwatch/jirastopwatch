@@ -27,26 +27,74 @@ jobs:
   build:
     name: "Build in ${{ matrix.configuration }} Mode"
     runs-on: windows-latest
+    continue-on-error: true
     strategy:
+      fail-fast: false
       matrix:
         configuration:
           - Debug
           - Release
-
+    env:
+      CONFIGURATION: '${{ matrix.configuration }}'
+      SOLUTION_NAME: 'StopWatch.sln'
+      SETTINGS_FILE: '.runsettings'
+      TEST_LOGGER: 'trx;logfilename=testResults.trx'
     steps:
-      - name: "Checkout"
+      - id: checkout
+        name: "Checkout"
         uses: actions/checkout@v4
 
-      - name: "Setup .NET"
+      - id: setup-dotnet
+        name: "Setup .NET"
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 6.0.x
 
-      - name: "Restore"
-        run: nuget restore StopWatch.sln
+      - id: dotnet-restore
+        name: "Dotnet Restore"
+        run: dotnet restore "$env:SOLUTION_NAME"
 
-      - name: "Build"
-        run: dotnet build --configuration ${{ matrix.configuration }} --no-restore StopWatch.sln
+      - id: nuget-restore
+        name: "Nuget Restore"
+        run: nuget restore "$env:SOLUTION_NAME"
 
-      - name: "Test"
-        run: dotnet test --configuration ${{ matrix.configuration }} --no-restore --no-build -v=detailed StopWatch.sln
+      - id: build
+        name: "Build"
+        run: dotnet build --configuration "$env:CONFIGURATION" --no-restore "$env:SOLUTION_NAME"
+
+      - id: test
+        name: "Test"
+        run: dotnet test --configuration "$env:CONFIGURATION" --no-restore --no-build --settings "$env:SETTINGS_FILE" --logger "$env:TEST_LOGGER" --logger "console;verbosity=detailed" "$env:SOLUTION_NAME"
+
+      - id: upload-test-artifact
+        if: always() && steps.test.outcome != 'skipped'
+        name: "Archive Test Results"
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ join(matrix.*, '-') }}
+          path: '**/*.trx'
+          if-no-files-found: error
+
+  publish-test-results:
+    if: always()
+    name: "Publish Tests Results"
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
+      contents: read
+      issues: read
+    steps:
+      - id: download-test-artifact
+        name: "Download Test Results"
+        uses: actions/download-artifact@v4
+        with:
+          pattern: test-results-*
+          path: test-results
+
+      - id: publish-test-results
+        name: "Publish Test Results"
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: "test-results/**/*.trx"
