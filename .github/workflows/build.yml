@@ -50,8 +50,12 @@ jobs:
         with:
           dotnet-version: 6.0.x
 
-      - id: restore
-        name: "Restore"
+      - id: dotnet-restore
+        name: "Dotnet Restore"
+        run: dotnet restore "$env:SOLUTION_NAME"
+
+      - id: nuget-restore
+        name: "Nuget Restore"
         run: nuget restore "$env:SOLUTION_NAME"
 
       - id: build
