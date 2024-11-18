@@ -37,6 +37,7 @@ jobs:
     env:
       CONFIGURATION: '${{ matrix.configuration }}'
       SOLUTION_NAME: 'StopWatch.sln'
+      SETTINGS_FILE: '.runsettings'
       TEST_LOGGER: 'trx;logfilename=testResults.trx'
     steps:
       - id: checkout
@@ -59,7 +60,7 @@ jobs:
 
       - id: test
         name: "Test"
-        run: dotnet test --configuration "$env:CONFIGURATION" --no-restore --no-build --logger "$env:TEST_LOGGER" "source/StopWatchTest/StopWatchTest.csproj"
+        run: dotnet test --configuration "$env:CONFIGURATION" --no-restore --no-build --settings "$env:SETTINGS_FILE" --logger "$env:TEST_LOGGER" "source/StopWatchTest/StopWatchTest.csproj"
 
       - id: upload-test-artifact
         if: always() && steps.test.outcome != 'skipped'
