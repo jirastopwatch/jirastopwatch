@@ -43,7 +43,7 @@ jobs:
           dotnet-version: 6.0.x
 
       - name: "Restore"
-        run: dotnet restore --configuration ${{ matrix.configuration }} StopWatch.sln
+        run: dotnet restore StopWatch.sln
 
       - name: "Build"
         run: dotnet build --configuration ${{ matrix.configuration }} --no-restore StopWatch.sln
