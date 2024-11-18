@@ -18,8 +18,6 @@ on:
 env:
   DOTNET_NOLOGO: 1
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
-  SOLUTION_NAME: 'StopWatch.sln'
-  TEST_LOGGER: 'trx;logfilename=testResults.trx'
 
 concurrency:
   group: build-${{ github.sha }}
@@ -36,6 +34,10 @@ jobs:
         configuration:
           - Debug
           - Release
+    env:
+      CONFIGURATION: '${{ matrix.configuration }}'
+      SOLUTION_NAME: 'StopWatch.sln'
+      TEST_LOGGER: 'trx;logfilename=testResults.trx'
     steps:
       - id: checkout
         name: "Checkout"
@@ -49,15 +51,15 @@ jobs:
 
       - id: restore
         name: "Restore"
-        run: nuget restore "${SOLUTION_NAME}"
+        run: nuget restore "$env:SOLUTION_NAME"
 
       - id: build
         name: "Build"
-        run: dotnet build --configuration ${{ matrix.configuration }} --no-restore "${SOLUTION_NAME}"
+        run: dotnet build --configuration "$env:CONFIGURATION" --no-restore "$env:SOLUTION_NAME"
 
       - id: test
         name: "Test"
-        run: dotnet test --configuration ${{ matrix.configuration }} --no-restore --no-build --logger "${TEST_LOGGER}" "${SOLUTION_NAME}"
+        run: dotnet test --configuration "$env:CONFIGURATION" --no-restore --no-build --logger "$env:TEST_LOGGER" "$env:SOLUTION_NAME"
 
       - id: upload-test-artifact
         if: always() && steps.test.outcome != 'skipped'
