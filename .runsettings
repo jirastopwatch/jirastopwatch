@@ -1,0 +1,5 @@
+<RunConfiguration>
+    <MaxCpuCount>0</MaxCpuCount>
+    <TestSessionTimeout>10000</TestSessionTimeout>
+    <TreatNoTestsAsError>true</TreatNoTestsAsError>
+</RunConfiguration>
