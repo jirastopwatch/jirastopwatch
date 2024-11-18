@@ -59,7 +59,7 @@ jobs:
 
       - id: test
         name: "Test"
-        run: dotnet test --configuration "$env:CONFIGURATION" --no-restore --no-build --logger "$env:TEST_LOGGER" "$env:SOLUTION_NAME"
+        run: dotnet test --configuration "$env:CONFIGURATION" --no-restore --no-build --logger "$env:TEST_LOGGER" "source/StopWatchTest/StopWatchTest.csproj"
 
       - id: upload-test-artifact
         if: always() && steps.test.outcome != 'skipped'
