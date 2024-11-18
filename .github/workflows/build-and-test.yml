@@ -1,7 +1,7 @@
 ---
 
-name: "Build"
-run-name: "Build"
+name: "Build and Test"
+run-name: "Build and Test"
 
 on:
   push:
@@ -20,12 +20,12 @@ env:
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
 
 concurrency:
-  group: build-${{ github.sha }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build:
-    name: "Build in ${{ matrix.configuration }} Mode"
+  build-and-test:
+    name: "Build and Test in ${{ matrix.configuration }} Mode"
     runs-on: windows-latest
     continue-on-error: true
     strategy:
@@ -78,7 +78,7 @@ jobs:
   publish-test-results:
     if: always()
     name: "Publish Tests Results"
-    needs: build
+    needs: build-and-test
     runs-on: ubuntu-latest
     permissions:
       checks: write
