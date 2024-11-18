@@ -1,7 +1,7 @@
 ---
 
-name: Build
-run-name: Build
+name: "Build"
+run-name: "Build"
 
 on:
   push:
@@ -25,12 +25,28 @@ concurrency:
 
 jobs:
   build:
+    name: "Build in ${{ matrix.configuration }} Mode"
     runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-dotnet@v3
+    strategy:
+      matrix:
+        configuration:
+          - Debug
+          - Release
 
-      - run: dotnet restore StopWatch.sln
-      - run: nuget restore StopWatch.sln
-      - run: dotnet build --configuration Release --no-restore StopWatch.sln
-      - run: dotnet test --configuration Release --no-restore --no-build -v=detailed StopWatch.sln
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v3
+
+      - name: "Setup .NET"
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.0.x
+
+      - name: "Restore"
+        run: nuget restore StopWatch.sln
+
+      - name: "Build"
+        run: dotnet build --configuration ${{ matrix.configuration }} --no-restore StopWatch.sln
+
+      - name: "Test"
+        run: dotnet test --configuration ${{ matrix.configuration }} --no-restore --no-build -v=detailed StopWatch.sln
