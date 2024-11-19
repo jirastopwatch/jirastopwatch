@@ -1,5 +1,8 @@
 ## Summary
 
+[![CodeQL](https://github.com/jirastopwatch/jirastopwatch/actions/workflows/codeql.yml/badge.svg)](https://github.com/jirastopwatch/jirastopwatch/actions/workflows/codeql.yml)
+[![Build](https://github.com/jirastopwatch/jirastopwatch/actions/workflows/build.yml/badge.svg)](https://github.com/jirastopwatch/jirastopwatch/actions/workflows/build.yml)
+
 A Windows desktop tool for recording time spent on different Jira tasks.
 
 ![screenshot 1]
