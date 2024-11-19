@@ -6,9 +6,6 @@ run-name: "Dispatch Event: ${{ github.event_name }}"
 on:
   push:
 
-permissions:
-  contents: write
-
 env:
   GH_TOKEN: ${{ github.token }}
 
@@ -39,6 +36,7 @@ jobs:
       - name: "Send Dispatch"
         run: echo "${PAYLOAD}" | gh api -X POST "${ENDPOINT}" --input -
         env:
+          GH_TOKEN: '${{ secrets.DISPATCH_NORWD_PAT }}'
           ENDPOINT: '/repos/${{ matrix.target_repo }}/dispatches'
           PAYLOAD: |
             ${{
