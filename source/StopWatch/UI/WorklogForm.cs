@@ -5,7 +5,7 @@
  *
  * For a full list of contributing authors, see:
  *
- *     https://jirastopwatch.github.io/contributors
+ *     https://jirastopwatch.com/contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
