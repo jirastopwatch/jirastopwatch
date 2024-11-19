@@ -106,8 +106,8 @@ namespace StopWatchTest
 
             var response = jiraApiRequester.DoAuthenticatedRequest<TestPocoClass>(requestMock);
 
-            Assert.NotNull(response);
-            Assert.IsEmpty(jiraApiRequester.ErrorMessage);
+            Assert.That(response, Is.Not.Null);
+            Assert.That(jiraApiRequester.ErrorMessage, Is.Empty);
         }
 
         [Test, Description("DoAuthenticatedRequest: with wrong credentials it throws an exception")]
