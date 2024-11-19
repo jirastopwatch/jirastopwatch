@@ -20,35 +20,41 @@ env:
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
 
 concurrency:
-  group: build-${{ github.sha }}
+  group: ${{ github.workflow }}-${{ github.sha }}
   cancel-in-progress: true
 
 jobs:
   build:
-    name: "Build in ${{ matrix.configuration }} Mode"
+    name: "Build"
     runs-on: windows-latest
     continue-on-error: true
+
     strategy:
       fail-fast: false
       matrix:
         configuration:
           - Debug
           - Release
+        dotnet-version:
+          - 3.1.x
+          - 6.0.x
+
     env:
       CONFIGURATION: '${{ matrix.configuration }}'
       SOLUTION_NAME: 'StopWatch.sln'
       SETTINGS_FILE: '.runsettings'
       TEST_LOGGER: 'trx;logfilename=testResults.trx'
+
     steps:
       - id: checkout
         name: "Checkout"
         uses: actions/checkout@v4
 
       - id: setup-dotnet
-        name: "Setup .NET"
+        name: "Setup Dotnet"
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 6.0.x
+          dotnet-version: ${{ matrix.dotnet-version }}
 
       - id: dotnet-restore
         name: "Dotnet Restore"
@@ -67,7 +73,7 @@ jobs:
         run: dotnet test --configuration "$env:CONFIGURATION" --no-restore --no-build --settings "$env:SETTINGS_FILE" --logger "$env:TEST_LOGGER" --logger "console;verbosity=detailed" "$env:SOLUTION_NAME"
 
       - id: upload-test-artifact
-        if: always() && steps.test.outcome != 'skipped'
+        if: always() && !contains(fromJSON('["cancelled", "skipped"]'), steps.test.outcome)
         name: "Archive Test Results"
         uses: actions/upload-artifact@v4
         with:
@@ -76,25 +82,29 @@ jobs:
           if-no-files-found: error
 
   publish-test-results:
-    if: always()
+    if: always() && !contains(fromJSON('["cancelled", "skipped"]'), needs.build.result)
     name: "Publish Tests Results"
     needs: build
     runs-on: ubuntu-latest
+
     permissions:
       checks: write
       pull-requests: write
       contents: read
       issues: read
+
     steps:
       - id: download-test-artifact
         name: "Download Test Results"
         uses: actions/download-artifact@v4
         with:
-          pattern: test-results-*
-          path: test-results
+          pattern: 'test-results-*'
+          path: 'test-results'
 
       - id: publish-test-results
         name: "Publish Test Results"
         uses: EnricoMi/publish-unit-test-result-action@v2
         with:
+          action_fail: true
+          time_unit: milliseconds
           files: "test-results/**/*.trx"
