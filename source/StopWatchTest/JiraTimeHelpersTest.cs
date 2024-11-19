@@ -81,6 +81,7 @@ namespace StopWatchTest
         {
             Assert.That(JiraTimeHelpers.JiraTimeToTimeSpan("m"), Is.Null);
             Assert.That(JiraTimeHelpers.JiraTimeToTimeSpan("2 m"), Is.Null);
+            Assert.Fail();
         }
 
         [Test]
