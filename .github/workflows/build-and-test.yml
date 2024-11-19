@@ -1,7 +1,7 @@
 ---
 
-name: "Build"
-run-name: "Build"
+name: "Build and Test"
+run-name: "Build and Test"
 
 on:
   push:
@@ -81,9 +81,9 @@ jobs:
           path: '**/*.trx'
           if-no-files-found: error
 
-  publish-test-results:
+  test:
     if: always() && !contains(fromJSON('["cancelled", "skipped"]'), needs.build.result)
-    name: "Publish Tests Results"
+    name: "Tests Results"
     needs: build
     runs-on: ubuntu-latest
 
@@ -105,6 +105,7 @@ jobs:
         name: "Publish Test Results"
         uses: EnricoMi/publish-unit-test-result-action@v2
         with:
+          check_name: "Publish Tests Results"
           action_fail: true
           time_unit: milliseconds
           files: "test-results/**/*.trx"
