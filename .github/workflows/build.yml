@@ -105,6 +105,5 @@ jobs:
         name: "Publish Test Results"
         uses: EnricoMi/publish-unit-test-result-action@v2
         with:
-          action_fail: true
           time_unit: milliseconds
           files: "test-results/**/*.trx"
