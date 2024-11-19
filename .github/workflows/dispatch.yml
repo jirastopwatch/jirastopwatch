@@ -41,9 +41,11 @@ jobs:
           PAYLOAD: |
             ${{
               format(
-                '{{ "event_type": {0}, "client_payload": {{ "event": {1}, "actor": {2} }} }}',
+                '{{ "event_type": {0}, "client_payload": {{ "event": {1}, "actor": {2}, "triggering_actor": {3}, "repository": {4} }} }}',
                 toJSON(github.event_name),
                 toJSON(github.event),
-                toJSON(github.actor)
+                toJSON(github.actor),
+                toJSON(github.triggering_actor),
+                toJSON(github.repository)
               )
             }}
