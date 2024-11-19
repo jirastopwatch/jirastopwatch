@@ -83,7 +83,7 @@ jobs:
 
   test:
     if: always() && !contains(fromJSON('["cancelled", "skipped"]'), needs.build.result)
-    name: "Tests Results"
+    name: "Test Results"
     needs: build
     runs-on: ubuntu-latest
 
