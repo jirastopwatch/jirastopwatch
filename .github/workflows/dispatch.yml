@@ -6,6 +6,9 @@ run-name: "Dispatch Event: ${{ github.event_name }}"
 on:
   push:
 
+permissions:
+  contents: write
+
 env:
   GH_TOKEN: ${{ github.token }}
 
@@ -21,7 +24,7 @@ jobs:
         env:
           GH_OWNER: '${{ github.repository_owner }}'
           JQ_PROPS: 'nameWithOwner'
-          JQ_QUERY: '"json=" + ([ .[].nameWithOwner ] | tostring)'
+          JQ_QUERY: '"json=" + ([ .[] | select(.nameWithOwner != "${{ github.repository_owner }}") | .nameWithOwner ] | tostring)'
 
   dispatch:
     name: "Dispatch Event to ${{ matrix.target_repo }}"
