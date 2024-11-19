@@ -70,7 +70,7 @@ jobs:
         run: dotnet test --configuration "$env:CONFIGURATION" --no-restore --no-build --settings "$env:SETTINGS_FILE" --logger "$env:TEST_LOGGER" --logger "console;verbosity=detailed" "$env:SOLUTION_NAME"
 
       - id: upload-test-artifact
-        if: always() && steps.test.outcome != 'skipped'
+        if: always() && !contains(fromJSON('["cancelled", "skipped"]'), steps.test.outcome)
         name: "Archive Test Results"
         uses: actions/upload-artifact@v4
         with:
@@ -79,9 +79,10 @@ jobs:
           if-no-files-found: error
 
   publish-test-results:
-    if: always()
+    if: always() && !contains(fromJSON('["cancelled", "skipped"]'), needs.build.result)
     name: "Publish Tests Results"
-    needs: build
+    needs:
+      - build
     runs-on: ubuntu-latest
     permissions:
       checks: write
@@ -93,8 +94,8 @@ jobs:
         name: "Download Test Results"
         uses: actions/download-artifact@v4
         with:
-          pattern: test-results-*
-          path: test-results
+          pattern: 'test-results-*'
+          path: 'test-results'
 
       - id: publish-test-results
         name: "Publish Test Results"
