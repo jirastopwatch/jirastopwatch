@@ -25,9 +25,10 @@ concurrency:
 
 jobs:
   build:
-    name: "Build in ${{ matrix.configuration }} Mode"
+    name: "Build"
     runs-on: windows-latest
     continue-on-error: true
+
     strategy:
       fail-fast: false
       matrix:
@@ -37,18 +38,20 @@ jobs:
         dotnet-version:
           - 3.1.x
           - 6.0.x
+
     env:
       CONFIGURATION: '${{ matrix.configuration }}'
       SOLUTION_NAME: 'StopWatch.sln'
       SETTINGS_FILE: '.runsettings'
       TEST_LOGGER: 'trx;logfilename=testResults.trx'
+
     steps:
       - id: checkout
         name: "Checkout"
         uses: actions/checkout@v4
 
       - id: setup-dotnet
-        name: "Setup .NET"
+        name: "Setup Dotnet"
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
@@ -81,14 +84,15 @@ jobs:
   publish-test-results:
     if: always() && !contains(fromJSON('["cancelled", "skipped"]'), needs.build.result)
     name: "Publish Tests Results"
-    needs:
-      - build
+    needs: build
     runs-on: ubuntu-latest
+
     permissions:
       checks: write
       pull-requests: write
       contents: read
       issues: read
+
     steps:
       - id: download-test-artifact
         name: "Download Test Results"
