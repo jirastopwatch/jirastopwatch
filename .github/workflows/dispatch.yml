@@ -4,7 +4,22 @@ name: "Dispatch Event"
 run-name: "Dispatch Event: ${{ github.event_name }}"
 
 on:
+
+  fork:
+
   push:
+    branches:
+      - main
+
+  release:
+    types:
+      - published
+      - unpublished
+      - created
+      - edited
+      - deleted
+      - prereleased
+      - released
 
 env:
   GH_TOKEN: ${{ github.token }}
