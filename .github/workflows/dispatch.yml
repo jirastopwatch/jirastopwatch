@@ -24,7 +24,7 @@ jobs:
         env:
           GH_OWNER: '${{ github.repository_owner }}'
           JQ_PROPS: 'nameWithOwner'
-          JQ_QUERY: '"json=" + ([ .[] | select(.nameWithOwner != "${{ github.repository_owner }}") | .nameWithOwner ] | tostring)'
+          JQ_QUERY: '"json=" + ([ .[] | select(.nameWithOwner != "${{ github.repository }}") | .nameWithOwner ] | tostring)'
 
   dispatch:
     name: "Dispatch Event to ${{ matrix.target_repo }}"
