@@ -35,8 +35,8 @@ jobs:
           - Debug
           - Release
         dotnet-version:
-          - 4.x
-          - 6.x
+          - 3.1.x
+          - 6.0.x
     env:
       CONFIGURATION: '${{ matrix.configuration }}'
       SOLUTION_NAME: 'StopWatch.sln'
