@@ -24,6 +24,10 @@ env:
   CONFIGURATION: 'Release'
   SOLUTION_NAME: 'StopWatch.sln'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.sha }}
+  cancel-in-progress: true
+
 jobs:
   analyze:
     name: "Analyze"
