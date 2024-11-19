@@ -34,6 +34,9 @@ jobs:
         configuration:
           - Debug
           - Release
+        dotnet-version:
+          - 4.x
+          - 6.x
     env:
       CONFIGURATION: '${{ matrix.configuration }}'
       SOLUTION_NAME: 'StopWatch.sln'
@@ -48,7 +51,7 @@ jobs:
         name: "Setup .NET"
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 6.0.x
+          dotnet-version: ${{ matrix.dotnet-version }}
 
       - id: dotnet-restore
         name: "Dotnet Restore"
