@@ -32,7 +32,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Jira StopWatch")]
-[assembly: AssemblyCopyright("Copyright © 2024 Carsten Gehling, Dan Tulloh, Y. Meyer-Norwood, et al.")]
+[assembly: AssemblyCopyright("Copyright © 2025 Carsten Gehling, Dan Tulloh, Y. Meyer-Norwood, et al.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
