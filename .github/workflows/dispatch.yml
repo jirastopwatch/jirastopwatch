@@ -1,0 +1,54 @@
+---
+
+name: "Dispatch Event"
+run-name: "Dispatch Event: ${{ github.event_name }}"
+
+on:
+  fork:
+  release:
+  push:
+    branches: [main]
+
+env:
+  GH_TOKEN: ${{ github.token }}
+
+jobs:
+  targets:
+    name: "Define Targets"
+    runs-on: ubuntu-latest
+    outputs:
+      repositories: ${{ steps.repositories.outputs.json }}
+    steps:
+      - id: repositories
+        run: gh repo list "${GH_OWNER}" --no-archived --source --limit 1000 --json "${JQ_PROPS}" --jq "${JQ_QUERY}" | tee -a "${GITHUB_OUTPUT}"
+        env:
+          GH_OWNER: '${{ github.repository_owner }}'
+          JQ_PROPS: 'nameWithOwner'
+          JQ_QUERY: '"json=" + ([ .[] | select(.nameWithOwner != "${{ github.repository }}") | .nameWithOwner ] | tostring)'
+
+  dispatch:
+    name: "Dispatch Event to ${{ matrix.target_repo }}"
+    runs-on: ubuntu-latest
+    needs: targets
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        target_repo: ${{ fromJSON(needs.targets.outputs.repositories) }}
+    steps:
+      - name: "Send Dispatch"
+        run: echo "${PAYLOAD}" | gh api -X POST "${ENDPOINT}" --input -
+        env:
+          GH_TOKEN: '${{ secrets.DISPATCH_NORWD_PAT }}'
+          ENDPOINT: '/repos/${{ matrix.target_repo }}/dispatches'
+          PAYLOAD: |
+            ${{
+              format(
+                '{{ "event_type": {0}, "client_payload": {{ "event": {1}, "actor": {2}, "triggering_actor": {3}, "repository": {4} }} }}',
+                toJSON(github.event_name),
+                toJSON(github.event),
+                toJSON(github.actor),
+                toJSON(github.triggering_actor),
+                toJSON(github.repository)
+              )
+            }}
