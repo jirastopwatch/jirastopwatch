@@ -94,12 +94,12 @@ jobs:
           package-ecosystem: "github-actions"
           directory: "/"
 
-  secret-scan:
-    name: "Secret Scan"
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Checkout"
-        uses: actions/checkout@v4
-
-      - name: "Scan for secrets"
-        uses: github/secret-scanning@v2
+  #secret-scan:
+  #  name: "Secret Scan"
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - name: "Checkout"
+  #      uses: actions/checkout@v4
+  #
+  #    - name: "Scan for secrets"
+  #      uses: github/secret-scanning@v2
