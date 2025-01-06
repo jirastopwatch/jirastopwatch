@@ -28,10 +28,30 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.sha }}
   cancel-in-progress: true
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   analyze:
-    name: "Analyze"
-    runs-on: windows-latest
+    name: "Analyze (${{ matrix.language }})"
+    runs-on: ${{ matrix.runner }}
+
+    permissions:
+      security-events: write
+      packages: read
+      actions: read
+      contents: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: windows-latest
+            language: csharp
+          - runner: ubuntu-latest
+            language: actions
+
     steps:
       - name: "Checkout"
         uses: actions/checkout@v4
@@ -39,23 +59,47 @@ jobs:
       - name: "Initialize CodeQL"
         uses: github/codeql-action/init@v3
         with:
-          languages: csharp
+          languages: ${{ matrix.language }}
 
-      - name: "Setup Dotnet"
+      - if: matrix.language == 'csharp'
+        name: "Setup Dotnet"
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 6.0.x
 
-      - name: "Dotnet Restore"
-        run: dotnet restore "$env:SOLUTION_NAME"
-
-      - name: "Nuget Restore"
-        run: nuget restore "$env:SOLUTION_NAME"
-
-      - name: "Build"
-        run: dotnet build --configuration "$env:CONFIGURATION" --no-restore "$env:SOLUTION_NAME"
+      - if: matrix.language == 'csharp'
+        name: "Build (${{ matrix.language }})"
+        run: |
+          dotnet restore "${SOLUTION_NAME}"
+          nuget restore "${SOLUTION_NAME}"
+          dotnet build --configuration "${CONFIGURATION}" --no-restore "${SOLUTION_NAME}"
 
       - name: "Perform CodeQL Analysis"
         uses: github/codeql-action/analyze@v3
         with:
-          category: "/language:csharp"
+          category: "/language:${{ matrix.language }}"
+
+  dependency-scan:
+    name: Dependency Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v4
+
+      - name: "Scan for dependencies"
+        uses: github/dependabot-action@v2
+        with:
+          sub-directory: "/"
+          open-pull-requests-limit: 5
+          package-ecosystem: "github-actions"
+          directory: "/"
+
+  #secret-scan:
+  #  name: "Secret Scan"
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - name: "Checkout"
+  #      uses: actions/checkout@v4
+  #
+  #    - name: "Scan for secrets"
+  #      uses: github/secret-scanning@v2
