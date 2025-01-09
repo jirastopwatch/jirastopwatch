@@ -1,8 +1,3 @@
----
-lang: en
-title-meta: Apache License Version 2.0
----
-
 # Apache License
 
 Version 2.0, January 2004 http://www.apache.org/licenses
@@ -193,10 +188,11 @@ Version 2.0, January 2004 http://www.apache.org/licenses
     same "printed page" as the copyright notice for easier
     identification within third-party archives.
 
-Copyright 2023 [Carsten Gehling](https://github.com/carstengehling)
-, [Dan Tulloh](https://github.com/tulleuchen)
-, [Y. Meyer-Norwood](https://github.com/norwd)
-, [et al](https://jirastopwatch.github.io/contributors)
+Copyright 2025
+[Carsten Gehling](https://github.com/carstengehling),
+[Dan Tulloh](https://github.com/tulleuchen),
+[Y. Meyer-Norwood](https://github.com/norwd),
+[et al](https://jirastopwatch.github.io/contributors)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
