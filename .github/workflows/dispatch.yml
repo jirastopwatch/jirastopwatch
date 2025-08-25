@@ -4,6 +4,7 @@ name: "Dispatch Event"
 run-name: "Dispatch Event: ${{ github.event_name }}"
 
 on:
+  workflow_dispatch:
   fork:
   release:
   push:
