@@ -50,7 +50,7 @@ namespace StopWatch
 
         public RestRequest CreateGetIssuesByJQLRequest(string jql)
         {
-            var request = restRequestFactory.Create(String.Format("/rest/api/2/search?jql={0}&maxResults=200", jql), Method.Get);
+            var request = restRequestFactory.Create(String.Format("/rest/api/2/search/jql?jql={0}&maxResults=200&fields=key,summary,project,timetracking", jql), Method.Get);
             return request;
         }
 
@@ -100,7 +100,7 @@ namespace StopWatch
 
         public RestRequest CreateGetConfigurationRequest()
         {
-            return restRequestFactory.Create("/rest/api/2/configuration", Method.Get);
+            return restRequestFactory.Create("/rest/api/3/configuration", Method.Get);
         }
 
 
