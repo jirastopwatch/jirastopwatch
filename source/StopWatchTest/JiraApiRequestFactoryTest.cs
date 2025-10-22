@@ -70,7 +70,7 @@ namespace StopWatchTest
         {
             string jql = "status%3Dopen";
             var request = jiraApiRequestFactory.CreateGetIssuesByJQLRequest(jql);
-            requestFactoryMock.Verify(m => m.Create(String.Format("/rest/api/3/search?jql={0}&maxResults=200", jql), Method.Get));
+            requestFactoryMock.Verify(m => m.Create(String.Format("/rest/api/3/search/jql?jql={0}&maxResults=200&fields=key,summary,project,timetracking", jql), Method.Get));
         }
 
 
