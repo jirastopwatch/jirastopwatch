@@ -75,7 +75,7 @@ jobs:
       - id: upload-test-artifact
         if: always() && !contains(fromJSON('["cancelled", "skipped"]'), steps.test.outcome)
         name: "Archive Test Results"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: test-results-${{ join(matrix.*, '-') }}
           path: '**/*.trx'
