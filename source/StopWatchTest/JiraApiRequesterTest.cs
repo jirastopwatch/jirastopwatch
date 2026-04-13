@@ -6,6 +6,7 @@
     using StopWatch;
     using System.Linq;
     using System.Net;
+    using System.Threading.Tasks;
 
     internal class TestPocoClass
     {
@@ -16,7 +17,7 @@
     [TestFixture]
     public class JiraApiRequesterTest
     {
-        private Mock<IRestClient> clientMock;
+        private Mock<IRestClientWrapper> clientMock;
         private Mock<IRestClientFactory> clientFactoryMock;
 
         private Mock<IJiraApiRequestFactory> jiraApiRequestFactoryMock;
@@ -26,7 +27,7 @@
         [SetUp]
         public void Setup()
         {
-            clientMock = new Mock<IRestClient>();
+            clientMock = new Mock<IRestClientWrapper>();
 
             clientFactoryMock = new Mock<IRestClientFactory>();
             clientFactoryMock.Setup(c => c.Create(It.IsAny<bool>())).Returns(clientMock.Object);
@@ -36,7 +37,7 @@
             jiraApiRequester = new JiraApiRequester(clientFactoryMock.Object, jiraApiRequestFactoryMock.Object);
         }
 
-        private static IRestResponse<TestPocoClass> TestAuth(IRestRequest requestMock, string valid_username, string valid_apitoken)
+        private static RestResponse<TestPocoClass> TestAuth(RestRequest requestMock, string valid_username, string valid_apitoken)
         {
             var authParam = requestMock.Parameters.FirstOrDefault(p => p.Type == ParameterType.HttpHeader && p.Name == "Authorization");
             const string prefix = "Basic ";
@@ -51,7 +52,7 @@
                         var comps = authString.Split(':');
                         if (comps.Length == 2 && comps[0] == valid_username && comps[1] == valid_apitoken)
                         {
-                            return new RestResponse<TestPocoClass>()
+                            return new RestResponse<TestPocoClass>(requestMock)
                             {
                                 StatusCode = HttpStatusCode.OK,
                                 Data = new TestPocoClass() { foo = "foo", bar = "bar" },
@@ -62,7 +63,7 @@
                     { }
                 }
             }
-            return new RestResponse<TestPocoClass>()
+            return new RestResponse<TestPocoClass>(requestMock)
             {
                 StatusCode = HttpStatusCode.Unauthorized
             };
@@ -76,14 +77,14 @@
 
             var requestMock = new RestRequest();
 
-            clientMock.Setup(c => c.Execute<TestPocoClass>(It.IsAny<IRestRequest>())).Returns(() => TestAuth(requestMock, valid_username, valid_apitoken));
+            clientMock.Setup(c => c.ExecuteAsync<TestPocoClass>(It.IsAny<RestRequest>())).Returns(() => Task.FromResult(TestAuth(requestMock, valid_username, valid_apitoken)));
 
             jiraApiRequester.SetAuthentication(valid_username, valid_apitoken);
 
             var response = jiraApiRequester.DoAuthenticatedRequest<TestPocoClass>(requestMock);
 
-            Assert.NotNull(response);
-            Assert.IsEmpty(jiraApiRequester.ErrorMessage);
+            Assert.That(response, Is.Not.Null);
+            Assert.That(jiraApiRequester.ErrorMessage, Is.Empty);
         }
 
         [Test, Description("DoAuthenticatedRequest: with wrong credentials it throws an exception")]
@@ -94,7 +95,7 @@
 
             var requestMock = new RestRequest();
 
-            clientMock.Setup(c => c.Execute<TestPocoClass>(It.IsAny<IRestRequest>())).Returns(() => TestAuth(requestMock, valid_username, valid_apitoken));
+            clientMock.Setup(c => c.ExecuteAsync<TestPocoClass>(It.IsAny<RestRequest>())).Returns(() => Task.FromResult(TestAuth(requestMock, valid_username, valid_apitoken)));
 
             jiraApiRequester.SetAuthentication("invalidUsername", "invalidApiToken");
 

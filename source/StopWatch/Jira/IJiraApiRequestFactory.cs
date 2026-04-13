@@ -20,16 +20,16 @@ namespace StopWatch
 {
     internal interface IJiraApiRequestFactory
     {
-        IRestRequest CreateValidateSessionRequest();
-        IRestRequest CreateGetFavoriteFiltersRequest();
-        IRestRequest CreateGetIssuesByJQLRequest(string jql);
-        IRestRequest CreateGetIssueSummaryRequest(string key);
-        IRestRequest CreateGetIssueTimetrackingRequest(string key);
-        IRestRequest CreatePostWorklogRequest(string key, DateTimeOffset started, TimeSpan time, string comment, EstimateUpdateMethods adjustmentMethod, string adjustmentValue);
-        IRestRequest CreatePostCommentRequest(string key, string comment);
-        IRestRequest CreateGetAvailableTransitions(string key);
-        IRestRequest CreateDoTransition(string key, int transitionId);
-        IRestRequest CreateGetConfigurationRequest();
+        RestRequest CreateValidateSessionRequest();
+        RestRequest CreateGetFavoriteFiltersRequest();
+        RestRequest CreateGetIssuesByJQLRequest(string jql);
+        RestRequest CreateGetIssueSummaryRequest(string key);
+        RestRequest CreateGetIssueTimetrackingRequest(string key);
+        RestRequest CreatePostWorklogRequest(string key, DateTimeOffset started, TimeSpan time, string comment, EstimateUpdateMethods adjustmentMethod, string adjustmentValue);
+        RestRequest CreatePostCommentRequest(string key, string comment);
+        RestRequest CreateGetAvailableTransitions(string key);
+        RestRequest CreateDoTransition(string key, int transitionId);
+        RestRequest CreateGetConfigurationRequest();
     }
 
 }

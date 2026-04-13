@@ -22,10 +22,15 @@ namespace StopWatch
     {
         public static GithubRelease GetLatestVersion()
         {
-            RestClient client = new RestClient("https://api.github.com");
+            var options = new RestClientOptions("https://api.github.com")
+            {
+                UserAgent = "jirastopwatch"
+            };
+            RestClient client = new RestClient(options);
             RestRequest request = new RestRequest("/repos/carstengehling/jirastopwatch/releases/latest");
 
-            IRestResponse<GithubRelease> response = client.Execute<GithubRelease>(request);
+            // RestSharp v112+ is async-only; use .GetAwaiter().GetResult() for sync context
+            RestResponse<GithubRelease> response = client.ExecuteAsync<GithubRelease>(request).GetAwaiter().GetResult();
             if (response.StatusCode != HttpStatusCode.OK)
                 return null;
 

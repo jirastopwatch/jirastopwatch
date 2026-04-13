@@ -13,14 +13,12 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 **************************************************************************/
-using RestSharp;
-
 namespace StopWatch
 {
     internal interface IRestClientFactory
     {
         string BaseUrl { get; set; }
 
-        IRestClient Create(bool invalidateCookies = false);
+        IRestClientWrapper Create(bool invalidateCookies = false);
     }
 }

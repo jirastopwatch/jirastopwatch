@@ -17,7 +17,6 @@ using System;
 
 namespace StopWatch
 {
-    [Serializable()]
     internal class PersistedIssue
     {
         public string Key { get; set; }

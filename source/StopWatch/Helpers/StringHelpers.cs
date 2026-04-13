@@ -21,6 +21,8 @@ namespace StopWatch
     {
         public static string Truncate(string str, int length)
         {
+            if (str == null)
+                return string.Empty;
             return str.Substring(0, Math.Min(str.Length, length));
         }
 

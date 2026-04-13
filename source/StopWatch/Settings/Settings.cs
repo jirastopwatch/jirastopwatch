@@ -17,7 +17,8 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
+using System.Text.Json;
 
 namespace StopWatch
 {
@@ -182,33 +183,19 @@ namespace StopWatch
 
         public List<PersistedIssue> ReadIssues(string data)
         {
-            if (string.IsNullOrEmpty(Properties.Settings.Default.PersistedIssues))
+            if (string.IsNullOrEmpty(data))
                 return new List<PersistedIssue>();
 
-            using (MemoryStream ms = new MemoryStream(Convert.FromBase64String(data)))
-            {
-                BinaryFormatter bf = new BinaryFormatter();
-                return (List<PersistedIssue>)bf.Deserialize(ms);
-            }
-
+            byte[] bytes = Convert.FromBase64String(data);
+            string json = Encoding.UTF8.GetString(bytes);
+            return JsonSerializer.Deserialize<List<PersistedIssue>>(json) ?? new List<PersistedIssue>();
         }
 
 
         public string WriteIssues(List<PersistedIssue> issues)
         {
-            string s;
-
-            using (MemoryStream ms = new MemoryStream())
-            {
-                BinaryFormatter bf = new BinaryFormatter();
-                bf.Serialize(ms, issues);
-                ms.Position = 0;
-                byte[] buffer = new byte[(int)ms.Length];
-                ms.Read(buffer, 0, buffer.Length);
-                s = Convert.ToBase64String(buffer);
-            }
-
-            return s;
+            string json = JsonSerializer.Serialize(issues);
+            return Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
         }
         #endregion
 

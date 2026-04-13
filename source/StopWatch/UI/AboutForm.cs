@@ -28,12 +28,12 @@ namespace StopWatch
 
         private void lblLicense_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            System.Diagnostics.Process.Start("http://www.apache.org/licenses/LICENSE-2.0");
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("http://www.apache.org/licenses/LICENSE-2.0") { UseShellExecute = true });
         }
 
         private void lblHomepage_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            System.Diagnostics.Process.Start("http://jirastopwatch.com");
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("http://jirastopwatch.com") { UseShellExecute = true });
         }
     }
 }

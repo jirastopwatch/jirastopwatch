@@ -575,9 +575,53 @@ namespace StopWatch
             Task.Factory.StartNew(
                 () =>
                 {
-                    List<Filter> filters = jiraClient.GetFavoriteFilters();
+                    Logger.Instance.Log("LoadFilters: calling GetFavoriteFilters...");
+                    List<Filter> filters = null;
+                    try
+                    {
+                        filters = jiraClient.GetFavoriteFilters();
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Instance.Log(string.Format("LoadFilters: unexpected exception: {0}", ex.Message), ex);
+                    }
+
+                    Logger.Instance.Log(string.Format("LoadFilters: result is {0}",
+                        filters == null ? "null" : string.Format("List<Filter> with {0} items", filters.Count)));
+
                     if (filters == null)
+                    {
+                        // Show UI warning to user instead of silently returning
+                        string jiraError = jiraClient.ErrorMessage;
+                        Logger.Instance.Log(string.Format("LoadFilters: jiraClient.ErrorMessage = '{0}'", jiraError ?? "(null)"));
+
+                        this.InvokeIfRequired(
+                            () =>
+                            {
+                                // Set a tooltip on the filter dropdown to indicate loading failure
+                                string errorMsg = !string.IsNullOrEmpty(jiraError)
+                                    ? jiraError
+                                    : "Could not load filters from JIRA. Check your connection and credentials.";
+                                ttMain.SetToolTip(cbFilters, errorMsg);
+                                
+                                // Also update connection status if not already showing error
+                                if (jiraClient.SessionValid)
+                                {
+                                    lblConnectionStatus.Text = "Filter load failed";
+                                    lblConnectionStatus.ForeColor = System.Drawing.Color.Red;
+                                }
+                            }
+                        );
                         return;
+                    }
+
+                    this.InvokeIfRequired(
+                        () =>
+                        {
+                            // Clear any previous error tooltip on successful load
+                            ttMain.SetToolTip(cbFilters, "Select a filter for issue search");
+                        }
+                    );
 
                     filters.Insert(0, new Filter
                     {
@@ -669,7 +713,7 @@ namespace StopWatch
                                 latestRelease.TagName,
                                 currentVersion);
                             if (MessageBox.Show(msg, "New version available", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                                System.Diagnostics.Process.Start("https://github.com/carstengehling/jirastopwatch/releases/latest");
+                                System.Diagnostics.Process.Start(new ProcessStartInfo("https://github.com/carstengehling/jirastopwatch/releases/latest") { UseShellExecute = true });
                         }
                     );
                 }
@@ -704,7 +748,7 @@ namespace StopWatch
             }
         }
 
-        private Timer ticker;
+        private System.Windows.Forms.Timer ticker;
 
         private JiraApiRequestFactory jiraApiRequestFactory;
         private RestRequestFactory restRequestFactory;
@@ -897,7 +941,7 @@ namespace StopWatch
 
         private void pbHelp_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("http://jirastopwatch.com/doc");
+            System.Diagnostics.Process.Start(new ProcessStartInfo("http://jirastopwatch.com/doc") { UseShellExecute = true });
         }
     }
 

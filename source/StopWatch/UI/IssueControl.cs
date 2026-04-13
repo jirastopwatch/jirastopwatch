@@ -426,7 +426,7 @@ namespace StopWatch
                 url += "/";
             url += "browse/";
             url += key.Trim();
-            System.Diagnostics.Process.Start(url);
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true });
         }
         #endregion
 
