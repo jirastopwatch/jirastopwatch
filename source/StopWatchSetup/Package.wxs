@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui"
+     xmlns:dep="http://wixtoolset.org/schemas/v4/wxs/dependency">
+  <Package
+    Name="Jira StopWatch"
+    Manufacturer="Carsten Gehling"
+    Version="2.4.0"
+    UpgradeCode="292249F1-B39F-4CA1-AA94-28FA5DA3CFFB"
+    Scope="perMachine"
+    Compressed="yes">
+
+    <MajorUpgrade
+      DowngradeErrorMessage="A newer version of Jira StopWatch is already installed."
+      Schedule="afterInstallInitialize" />
+
+    <MediaTemplate EmbedCab="yes" />
+
+    <!-- Installer UI: Welcome -> Install Folder -> Confirm -> Progress -> Finished -->
+    <ui:WixUI Id="WixUI_InstallDir" InstallDirectory="INSTALLFOLDER" />
+
+    <!-- Features -->
+    <Feature Id="Main" Title="Jira StopWatch" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+      <ComponentRef Id="ApplicationShortcut" />
+      <ComponentRef Id="LicenseFile" />
+    </Feature>
+  </Package>
+</Wix>

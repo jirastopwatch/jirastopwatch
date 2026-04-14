@@ -1,10 +1,5 @@
 [![Gitter chat](https://badges.gitter.im/jirastopwatch.png)](https://gitter.im/jirastopwatch "Gitter chat")
 
-#######################################################
-# Looking for a new maintainer for this repository!! #
-# Contact me at tulleuchen@gmail.com
-#######################################################
-
 ## Summary
 
 A Windows desktop tool for recording time spent on different Jira tasks.
@@ -43,7 +38,12 @@ All icons on buttons were downloaded from [Icons8](https://icons8.com).
 ## Changelog
 
 <pre>
+2.4.0     2026-04-14     New features/improvements:
+                           - Migrated Jira StopWatch from .NET Framework 4.5 to .NET 10.
+                           - Converted the application to SDK-style project files for modern .NET tooling.
+                           - Replaced the legacy installer toolchain with a WiX v5-based MSI build.
 2.2.0     2017-10-31     New features/improvements:
+
                            - Log work using actual start time (Thanks to Adam Conway)
                            - Use Jira's hour/day configuration when presenting time
                              (eg. 8 hours = 1 day) (Again thank you Adam Conway)
@@ -55,9 +55,9 @@ All icons on buttons were downloaded from [Icons8](https://icons8.com).
 						   - Added ellipsis for long issue summaries.
 
                          Bugfixes
-						   - Fixed random disappearing issue summaries.
-						   - Submit worklog accepts 0 without any unit as remaining time.
- 
+    					   - Fixed random disappearing issue summaries.
+    					   - Submit worklog accepts 0 without any unit as remaining time.
+
 2.0.1     2017-04-10     Bugfixes
                            - System tray icon missing when minimizing to tray.
                            - Always use current screen instead of main screen for calculating
@@ -111,7 +111,7 @@ All icons on buttons were downloaded from [Icons8](https://icons8.com).
                            - If issue keys are very long, they could be cropped in the dropdown
                              box. This has been fixed, so the key column width adapts to the
                              widest key.
-                      
+
 1.7.0     2016-06-25     New features/improvements:
                            - Edit timer is now always enabled - you edit by double-clicking
                              the time field. 
@@ -150,9 +150,9 @@ All icons on buttons were downloaded from [Icons8](https://icons8.com).
                           - notifyIcon is not available on Mono, so on non-Windows
                             platforms, disable all minimze-to-tray code
                           - Fixed thread UI issue
-
+    
                          Remade project structure to make crossplatform building easier
-
+    
                          Refactoring of internal Jira communication (including NUnit
                          test-coverage)
 
@@ -160,7 +160,7 @@ All icons on buttons were downloaded from [Icons8](https://icons8.com).
                          (eg. for lunch breaks)
 
                          Application can now be minimized to the system tray
-
+    
                          Several bugfixes - for details see the commit history
 
 1.4.1     2016-01-02     Added About dialog
@@ -172,7 +172,7 @@ All icons on buttons were downloaded from [Icons8](https://icons8.com).
 						 New option to enable timers to be editable. Useful if you forgot to start the
 						 timer when starting work. Times can be entered both Jira style like 1h 15m and
 						 the "classic" way like 1.25h.
-
+	
 						 Thanks goes to [Seth Feldkamp](https://github.com/sfeldkamp) for the ideas to
 						 both features and for testing.
 
@@ -185,9 +185,9 @@ All icons on buttons were downloaded from [Icons8](https://icons8.com).
 1.2.0     2015-10-19     Save time-tracking state, so stopwatch continue to "run" after quitting program
 
                          Automatic re-login, if Jira session has expired
-
+    
                          Visual Jira connection status
-
+    
                          Fixed tab-order on controls
 
 1.1.1     2015-10-09     Fixed problems with main window being "Always on top" and the applications

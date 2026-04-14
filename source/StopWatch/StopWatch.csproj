@@ -16,9 +16,17 @@
     <AssemblyTitle>Jira StopWatch</AssemblyTitle>
     <Product>Jira StopWatch</Product>
     <Copyright>Copyright © 2015 Carsten Gehling</Copyright>
-    <AssemblyVersion>2.3.0</AssemblyVersion>
-    <FileVersion>2.3.0</FileVersion>
-    <InformationalVersion>2.3.0</InformationalVersion>
+    <AssemblyVersion>2.4.0</AssemblyVersion>
+    <FileVersion>2.4.0</FileVersion>
+    <InformationalVersion>2.4.0</InformationalVersion>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+  </PropertyGroup>
+
+  <!-- Publish configuration for WiX packaging -->
+  <PropertyGroup>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>false</SelfContained>
+    <PublishDir>bin\publish\</PublishDir>
   </PropertyGroup>
 
   <ItemGroup>

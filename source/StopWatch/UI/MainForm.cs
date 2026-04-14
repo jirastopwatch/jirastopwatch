@@ -54,7 +54,8 @@ namespace StopWatch
             pMain.VerticalScroll.Visible = false;
             pMain.AutoScroll = true;
 
-            Text = string.Format("{0} v. {1}", Application.ProductName, Application.ProductVersion);
+            Text = string.Format("{0} v. {1}", Application.ProductName, Application.ProductVersion.Split('+')[0]);
+            SyncMainLayoutWidths();
 
             cbFilters.DropDownStyle = ComboBoxStyle.DropDownList;
             cbFilters.DisplayMember = "Name";
@@ -158,10 +159,19 @@ namespace StopWatch
 
         private void MainForm_Shown(object sender, EventArgs e)
         {
+            // Set TopMost based on user settings (default is false for first run)
+            this.TopMost = this.settings.AlwaysOnTop;
+
             if (this.settings.FirstRun)
             {
                 this.settings.FirstRun = false;
+                // Temporarily disable TopMost when showing settings dialog on first run
+                // to prevent the main window from overlapping the settings window
+                if (this.settings.AlwaysOnTop)
+                    this.TopMost = false;
                 EditSettings();
+                // Restore TopMost setting after settings dialog closes
+                this.TopMost = this.settings.AlwaysOnTop;
             }
             else
             {
@@ -217,6 +227,8 @@ namespace StopWatch
 
         private void MainForm_Resize(object sender, EventArgs e)
         {
+            SyncMainLayoutWidths();
+
             // Mono for MacOSX and Linux do not implement the notifyIcon
             // so ignore this feature if we are not running on Windows
             if (!CrossPlatformHelpers.IsWindowsEnvironment())
@@ -387,6 +399,7 @@ namespace StopWatch
             
             pMain.Height = ClientSize.Height - pTop.Height - pBottom.Height;
             pBottom.Top = ClientSize.Height - pBottom.Height;
+            SyncMainLayoutWidths();
 
             this.TopMost = this.settings.AlwaysOnTop;
 
@@ -398,6 +411,25 @@ namespace StopWatch
             this.ResumeLayout(false);
             this.PerformLayout();
             UpdateIssuesOutput(true);
+        }
+
+        private void SyncMainLayoutWidths()
+        {
+            int width = this.ClientSize.Width;
+            int rightPadding = 12;
+            int toolbarGap = 12;
+
+            pTop.Width = width;
+            pMain.Width = width;
+            pBottom.Width = width;
+            lblDivider.Width = width;
+
+            pbHelp.Left = width - rightPadding - pbHelp.Width;
+            pbAddIssue.Left = pbHelp.Left - toolbarGap - pbAddIssue.Width;
+            pbSettings.Left = width - rightPadding - pbSettings.Width;
+
+            foreach (IssueControl issue in this.issueControls)
+                issue.Width = this.pMain.ClientSize.Width;
         }
 
         private void Issue_TimeEdited(object sender, EventArgs e)

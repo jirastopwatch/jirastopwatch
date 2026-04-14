@@ -96,6 +96,8 @@ namespace StopWatch
             : base()
         {
             InitializeComponent();
+            LayoutIssueRow();
+            this.Resize += IssueControl_Resize;
 
             cbJiraTbEvents = new ComboTextBoxEvents(cbJira);
             cbJiraTbEvents.Paste += cbJiraTbEvents_Paste;
@@ -114,6 +116,11 @@ namespace StopWatch
         private void CbJiraTbEvents_MouseDown(object sender, EventArgs e)
         {
             SetSelected();
+        }
+
+        private void IssueControl_Resize(object sender, EventArgs e)
+        {
+            LayoutIssueRow();
         }
 
         public void ToggleRemoveIssueButton(bool Enable)
@@ -261,6 +268,38 @@ namespace StopWatch
             );
         }
 
+        private void LayoutIssueRow()
+        {
+            int leftPadding = 12;
+            int rightPadding = 12;
+            int smallGap = 8;
+            int buttonTop = 3;
+            int inputTop = 5;
+
+            int removeX = this.ClientSize.Width - rightPadding - btnRemoveIssue.Width;
+            int resetX = removeX - smallGap - btnReset.Width;
+            int postX = resetX - smallGap - btnPostAndReset.Width;
+            int timeX = postX - smallGap - tbTime.Width;
+            int startX = timeX - smallGap - btnStartStop.Width;
+            int openX = startX - smallGap - btnOpen.Width;
+            int jiraWidth = Math.Max(120, openX - smallGap - leftPadding);
+
+            cbJira.Location = new Point(leftPadding, inputTop);
+            cbJira.Size = new Size(jiraWidth, cbJira.Height);
+
+            btnOpen.Location = new Point(openX, buttonTop);
+            btnStartStop.Location = new Point(startX, buttonTop);
+            tbTime.Location = new Point(timeX, inputTop);
+            btnPostAndReset.Location = new Point(postX, buttonTop);
+            btnReset.Location = new Point(resetX, buttonTop);
+            btnRemoveIssue.Location = new Point(removeX, buttonTop);
+
+            lblSummary.Location = new Point(11, 36);
+            lblSummary.Size = new Size(Math.Max(0, this.ClientSize.Width - 23), lblSummary.Height);
+
+            cbJira.DropDownWidth = Math.Max(cbJira.Width + 250, 488);
+        }
+
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
@@ -315,7 +354,7 @@ namespace StopWatch
             this.lblSummary.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblSummary.Location = new System.Drawing.Point(11, 36);
             this.lblSummary.Name = "lblSummary";
-            this.lblSummary.Size = new System.Drawing.Size(482, 17);
+            this.lblSummary.Size = new System.Drawing.Size(494, 17);
             this.lblSummary.TabIndex = 6;
             this.lblSummary.MouseUp += new System.Windows.Forms.MouseEventHandler(this.lblSummary_MouseUp);
             // 
@@ -323,7 +362,7 @@ namespace StopWatch
             // 
             this.btnRemoveIssue.Enabled = false;
             this.btnRemoveIssue.Image = global::StopWatch.Properties.Resources.delete24;
-            this.btnRemoveIssue.Location = new System.Drawing.Point(465, 3);
+            this.btnRemoveIssue.Location = new System.Drawing.Point(451, 3);
             this.btnRemoveIssue.Name = "btnRemoveIssue";
             this.btnRemoveIssue.Size = new System.Drawing.Size(32, 32);
             this.btnRemoveIssue.TabIndex = 7;
@@ -335,7 +374,7 @@ namespace StopWatch
             // 
             this.btnPostAndReset.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnPostAndReset.Image = global::StopWatch.Properties.Resources.posttime26;
-            this.btnPostAndReset.Location = new System.Drawing.Point(369, 3);
+            this.btnPostAndReset.Location = new System.Drawing.Point(371, 3);
             this.btnPostAndReset.Name = "btnPostAndReset";
             this.btnPostAndReset.Size = new System.Drawing.Size(32, 32);
             this.btnPostAndReset.TabIndex = 4;
@@ -348,7 +387,7 @@ namespace StopWatch
             // 
             this.btnReset.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnReset.Image = global::StopWatch.Properties.Resources.reset24;
-            this.btnReset.Location = new System.Drawing.Point(429, 3);
+            this.btnReset.Location = new System.Drawing.Point(411, 3);
             this.btnReset.Name = "btnReset";
             this.btnReset.Size = new System.Drawing.Size(32, 32);
             this.btnReset.TabIndex = 5;
@@ -395,7 +434,7 @@ namespace StopWatch
             this.Controls.Add(this.btnOpen);
             this.Controls.Add(this.cbJira);
             this.Name = "IssueControl";
-            this.Size = new System.Drawing.Size(517, 58);
+            this.Size = new System.Drawing.Size(460, 58);
             this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.IssueControl_MouseUp);
             this.ResumeLayout(false);
             this.PerformLayout();

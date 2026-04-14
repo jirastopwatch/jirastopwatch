@@ -6,8 +6,9 @@
 
 - **Product Homepage**: [jirastopwatch.com](http://jirastopwatch.com)
 - **Repository**: [github.com/tulleuchen/jirastopwatch](https://github.com/tulleuchen/jirastopwatch)
-- **Latest Version**: 2.2.0 (2017-10-31)
-- **Status**: Looking for a new maintainer (noted in [`README.md`](README.md:4))
+- **Latest Version**: 2.4.0 (2026-04-14)
+- **Status**: Modernized and release-ready on .NET 10 with SDK-style projects and a WiX v5 installer.
+- **Migration**: Successfully migrated from .NET Framework 4.5 to **.NET 10 (net10.0-windows)** with SDK-style project files, updated dependencies, and modernized APIs.
 
 ---
 
@@ -17,22 +18,25 @@
 | Solution | File                                         | Purpose                                              |
 | -------- | -------------------------------------------- | ---------------------------------------------------- |
 | Main     | [`StopWatch.sln`](StopWatch.sln:1)           | Contains `StopWatch` (app) + `StopWatchTest` (tests) |
-| Setup    | [`StopWatchSetup.sln`](StopWatchSetup.sln:1) | MSI installer project (`StopWatchSetup.vdproj`)      |
+| Setup    | [`StopWatchSetup.sln`](StopWatchSetup.sln:1) | WiX v5 MSI installer project (`StopWatchSetup.wixproj`) |
 
 ### Project Configuration
-- **Target Framework**: .NET Framework 4.5 ([`StopWatch.csproj`](source/StopWatch/StopWatch.csproj:12))
-- **Output Type**: `WinExe` (Windows Forms application) ([`StopWatch.csproj`](source/StopWatch/StopWatch.csproj:8))
+- **Target Framework**: .NET 10 (net10.0-windows) ([`StopWatch.csproj`](source/StopWatch/StopWatch.csproj:5))
+- **Output Type**: `WinExe` (Windows Forms application) ([`StopWatch.csproj`](source/StopWatch/StopWatch.csproj:4))
 - **Namespace**: `StopWatch`
-- **Visual Studio**: Version 14 (VS 2015)
-- **Debug Config**: Warnings treated as errors ([`StopWatch.csproj`](source/StopWatch/StopWatch.csproj:24))
+- **Visual Studio**: Version 17 (VS 2022) or later (supports SDK-style projects)
+- **Debug Config**: Warnings treated as errors ([`StopWatch.csproj`](source/StopWatch/StopWatch.csproj:12))
 
 ### External Dependencies
 | Package                                             | Version       | Purpose                                                      |
 | --------------------------------------------------- | ------------- | ------------------------------------------------------------ |
-| [RestSharp](https://github.com/restsharp/RestSharp) | 105.2.3       | HTTP client for Jira REST API communication ([`packages.config`](source/StopWatch/packages.config:3)) |
-| NUnit                                               | 2.6.4         | Unit testing framework (test project only)                   |
-| Moq                                                 | 4.2.1510.2205 | Mocking framework (test project only)                        |
-| NUnitTestAdapter                                    | 2.0.0         | VS test runner adapter (test project only)                   |
+| [RestSharp](https://github.com/restsharp/RestSharp) | 112.1.0       | HTTP client for Jira REST API communication (via `PackageReference`) |
+| System.Configuration.ConfigurationManager          | 9.0.0         | Access to `ConfigurationManager` for application settings     |
+| System.Security.Cryptography.ProtectedData         | 9.0.0         | DPAPI wrapper for API token encryption                        |
+| NUnit                                               | 4.3.2         | Unit testing framework (test project only)                   |
+| Moq                                                 | 4.20.72       | Mocking framework (test project only)                        |
+| NUnit3TestAdapter                                   | 5.0.0         | VS test runner adapter (test project only)                   |
+| Microsoft.NET.Test.Sdk                              | 17.13.0       | Test SDK for dotnet test                                     |
 
 ---
 
@@ -182,7 +186,7 @@ Thread-safe singleton using .NET `Properties.Settings` for user-scoped configura
 | `CheckForUpdate`      | bool                                                         | true                         | Auto-check for updates on GitHub    |
 | `CurrentFilter`       | int                                                          | 0                            | Currently selected JQL filter ID    |
 
-**Issue Persistence**: [`PersistedIssue`](source/StopWatch/Settings/PersistedIssue.cs:21) objects are serialized via `BinaryFormatter` → Base64 string. Each stores: `Key`, `TimerRunning`, `InitialStartTime`, `SessionStartTime`, `TotalTime`, `Comment`, `EstimateUpdateMethod`, `EstimateUpdateValue`.
+**Issue Persistence**: [`PersistedIssue`](source/StopWatch/Settings/PersistedIssue.cs:21) objects are serialized via **System.Text.Json** → Base64 string (migrated from BinaryFormatter). Each stores: `Key`, `TimerRunning`, `InitialStartTime`, `SessionStartTime`, `TotalTime`, `Comment`, `EstimateUpdateMethod`, `EstimateUpdateValue`.
 
 **Settings Upgrade**: On version change, [`Properties.Settings.Default.Upgrade()`](source/StopWatch/Settings/Settings.cs:103) is called to migrate from previous versions.
 
@@ -267,6 +271,7 @@ Subclasses the edit control within a ComboBox using `NativeWindow` to intercept 
 ### [`DPAPI`](source/StopWatch/Helpers/DPApi.cs:25) (static)
 - Windows Data Protection API wrapper for encrypting/decrypting the API token stored in user settings
 - Uses user-scoped key by default ([`KeyType.UserKey`](source/StopWatch/Helpers/DPApi.cs:128))
+- **.NET 10 migration**: Fixed 64‑bit compatibility by passing `IntPtr.Zero` (instead of `null`) for optional entropy and prompt structure parameters.
 
 ### [`InvokeExtensions`](source/StopWatch/Helpers/InvokeExtensions.cs:21) (extension)
 - [`InvokeIfRequired()`](source/StopWatch/Helpers/InvokeExtensions.cs:28) — Thread-safe UI control invocation
@@ -298,18 +303,21 @@ Subclasses the edit control within a ComboBox using `NativeWindow` to intercept 
 
 ## 11. RestSharp Abstraction Layer
 
-Factory pattern for testability:
+Factory pattern for testability, extended with wrapper interfaces for RestSharp v112+ compatibility:
 
 | Interface                                                    | Implementation                                               | Purpose                                                      |
 | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | [`IRestClientFactory`](source/StopWatch/RestSharp/IRestClientFactory.cs:20) | [`RestClientFactory`](source/StopWatch/RestSharp/RestClientFactory.cs:21) | Creates `RestClient` with shared `CookieContainer` and configurable `BaseUrl` |
+| [`IRestClientWrapper`](source/StopWatch/RestSharp/IRestClientWrapper.cs:25) | [`RestClientWrapper`](source/StopWatch/RestSharp/RestClientWrapper.cs:25) | Wraps concrete `RestClient` to enable mocking (RestSharp v107+ removed `IRestClient`) |
 | [`IRestRequestFactory`](source/StopWatch/RestSharp/IRestRequestFactory.cs:20) | [`RestRequestFactory`](source/StopWatch/RestSharp/RestRequestFactory.cs:20) | Creates `RestRequest` with URL and method                    |
+
+**Migration Note**: RestSharp v112 introduced breaking API changes. The wrapper layer (`IRestClientWrapper`/`RestClientWrapper`) isolates the concrete `RestClient` class, allowing unit tests to mock HTTP execution while using the latest RestSharp version.
 
 ---
 
 ## 12. Test Project
 
-[`StopWatchTest`](source/StopWatchTest/StopWatchTest.csproj:1) — NUnit 2.6.4 + Moq 4.2 test suite.
+[`StopWatchTest`](source/StopWatchTest/StopWatchTest.csproj:1) — NUnit 4.3.2 + Moq 4.20.72 test suite, migrated to **.NET 10 (net10.0-windows)** and using the NUnit 4.x constraint model.
 
 ### Test Files & Coverage
 
