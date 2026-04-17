@@ -71,7 +71,7 @@ jobs:
 
       - id: publish
         name: "Publish"
-        run: dotnet publish --configuration "$env:CONFIGURATION" --no-restore --no-build "$env:CSPROJECT_FILE" --output publish
+        run: dotnet publish --configuration "$env:CONFIGURATION" --no-restore --no-build "$env:CSPROJECT_FILE" --output source/StopWatch/bin/publish
 
       - id: upload-publish-artifact
         name: "Archive Publish"
@@ -79,8 +79,7 @@ jobs:
         with:
           name: publish-${{ join(matrix.*, '-') }}
           path: |
-            publish/**
-            **/*.msi
+            **/bin/**/*
 
       - id: upload-test-artifact
         if: always() && !contains(fromJSON('["cancelled", "skipped"]'), steps.test.outcome)
@@ -93,7 +92,7 @@ jobs:
 
   publish-release:
     name: "Publish Release"
-    needs: build
+    needs: publish-test-results
     runs-on: ubuntu-slim
     permissions: {}
     steps:
