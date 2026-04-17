@@ -45,7 +45,7 @@
     <Component Id="LicenseFile" Guid="D7C5A8FA-1234-4567-89AB-CD1234567897" Directory="INSTALLFOLDER">
       <File
         Id="LicenseTxt"
-        Source="..\..\LICENSE.txt"
+        Source="..\..\LICENSE.md"
         KeyPath="yes" />
     </Component>
   </Fragment>
