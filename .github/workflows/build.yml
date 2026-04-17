@@ -79,7 +79,7 @@ jobs:
         with:
           name: publish-${{ join(matrix.*, '-') }}
           path: |
-            **/bin/**/*
+            **/*.msi
 
       - id: upload-test-artifact
         if: always() && !contains(fromJSON('["cancelled", "skipped"]'), steps.test.outcome)
