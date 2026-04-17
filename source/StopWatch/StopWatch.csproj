@@ -16,7 +16,13 @@
     <!-- Assembly metadata previously in AssemblyInfo.cs -->
     <AssemblyTitle>Jira StopWatch</AssemblyTitle>
     <Product>Jira StopWatch</Product>
-    <Copyright>Copyright © 2015 Carsten Gehling</Copyright>
+    <Copyright>
+      Copyright © 2026 Marco Leonor
+      Copyright © 2023 Y. Meyer-Norwood
+      Copyright © 2020 Dan Tulloh
+      Copyright © 2016 Carsten Gehling
+      https://jirastopwatch.com/humans
+    </Copyright>
     <AssemblyVersion>2.4.0</AssemblyVersion>
     <FileVersion>2.4.0</FileVersion>
     <InformationalVersion>2.4.0</InformationalVersion>
