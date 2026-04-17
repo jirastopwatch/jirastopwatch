@@ -69,7 +69,7 @@ jobs:
 
       - id: publish
         name: "Publish"
-        run: dotnet publish --no-restore --configuration "$env:CONFIGURATION" "${APP_PROJ_FILE}" --output publish
+        run: dotnet publish --no-restore --configuration "$env:CONFIGURATION" "$env:APP_PROJ_FILE" --output publish
 
       - id: build-installer
         name: "Build Installer"
