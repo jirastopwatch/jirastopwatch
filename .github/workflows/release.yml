@@ -1,0 +1,46 @@
+---
+
+name: "Release"
+run-name: "Release"
+
+on:
+  push:
+  #  branches:
+  #    - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.sha }}
+  cancel-in-progress: true
+
+env:
+  WIX_PROJ_FILE: 'source/StopWatchSetup/StopWatchSetup.wixproj'
+
+jobs:
+  release:
+    name: "Release"
+    runs-on: windows-latest
+    steps:
+
+      - id: checkout
+        name: "Checkout"
+        uses: actions/checkout@v6
+
+      - id: setup-dotnet
+        name: "Setup Dotnet"
+        uses: actions/setup-dotnet@v5
+
+      - id: dotnet-restore
+        name: "Dotnet Restore"
+        run: dotnet restore "$env:SOLUTION_NAME"
+
+      - id: build
+        name: "Build"
+        run: dotnet build --configuration "$env:CONFIGURATION" --no-restore "$env:WIX_PROJ_FILE"
+
+      - id: upload-release-artifact
+        name: "Archive Release"
+        uses: actions/upload-artifact@v4
+        with:
+          name: installer
+          path: |
+            **/*.msi
