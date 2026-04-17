@@ -73,7 +73,7 @@ jobs:
 
       - id: build-installer
         name: "Build Installer"
-        run: dotnet build --no-restore --configuration "$env:CONFIGURATION" "$env:WIX_PROJ_FILE"
+        run: dotnet build --configuration "$env:CONFIGURATION" "$env:WIX_PROJ_FILE"
 
       - id: upload-release-artifact
         name: "Archive Release"
