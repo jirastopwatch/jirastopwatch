@@ -54,17 +54,13 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
-      - id: dotnet-restore
-        name: "Dotnet Restore"
-        run: dotnet restore "$env:SOLUTION_NAME"
-
       - id: build-app
         name: "Build App"
-        run: dotnet build --configuration "$env:CONFIGURATION" --no-restore "$env:SOLUTION_NAME"
+        run: dotnet build --configuration "$env:CONFIGURATION" "$env:SOLUTION_NAME"
 
       - id: build-installer
         name: "Build Installer"
-        run: dotnet build --configuration "$env:CONFIGURATION" --no-restore "$env:WIX_PROJ_FILE"
+        run: dotnet build --configuration "$env:CONFIGURATION" "$env:WIX_PROJ_FILE"
 
       - id: upload-release-artifact
         name: "Archive Release"
