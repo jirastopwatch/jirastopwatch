@@ -78,7 +78,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: publish-${{ join(matrix.*, '-') }}
-          path: publish
+          path: |
+            publish/**
+            **/*.msi
 
       - id: upload-test-artifact
         if: always() && !contains(fromJSON('["cancelled", "skipped"]'), steps.test.outcome)
@@ -98,14 +100,6 @@ jobs:
 
       - name: "Download Publish Artifacts"
         uses: actions/download-artifact@v8
-        with:
-
-          # When multiple artifacts are matched, this changes the behavior of the destination directories.
-          # If true, the downloaded artifacts will be in the same directory specified by path.
-          # If false, the downloaded artifacts will be extracted into individual named directories within the specified path.
-          # Note: When downloading a single artifact (by name or ID), it will always be extracted directly to the specified path.
-          # Optional. Default is 'false'
-          merge-multiple: false # temp?
 
       - name: "Debugger"
         run: ls -Rl
@@ -114,7 +108,7 @@ jobs:
     if: always() && !contains(fromJSON('["cancelled", "skipped"]'), needs.build.result)
     name: "Publish Tests Results"
     needs: build
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
 
     permissions:
       checks: write
