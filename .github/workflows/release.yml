@@ -34,6 +34,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
+  CONFIGURATION: Release
   SOLUTION_NAME: 'StopWatch.sln'
   WIX_PROJ_FILE: 'source/StopWatchSetup/StopWatchSetup.wixproj'
 
