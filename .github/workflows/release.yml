@@ -5,8 +5,29 @@ run-name: "Release"
 
 on:
   push:
-  #  branches:
-  #    - main
+  # release:
+  #   types:
+  #     - created
+  #     - released
+  #     - published
+  #     - prereleased
+
+permissions:
+  actions: none
+  artifact-metadata: write
+  attestations: write
+  checks: write
+  contents: read
+  deployments: read
+  id-token: none
+  issues: none
+  models: none
+  discussions: write
+  packages: write
+  pages: none
+  pull-requests: none
+  security-events: none
+  statuses: none
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.sha }}
@@ -29,6 +50,8 @@ jobs:
       - id: setup-dotnet
         name: "Setup Dotnet"
         uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
 
       - id: dotnet-restore
         name: "Dotnet Restore"
