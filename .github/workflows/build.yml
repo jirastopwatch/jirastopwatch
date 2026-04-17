@@ -50,7 +50,7 @@ jobs:
         run: dotnet restore "$env:SOLUTION_NAME"
 
       - id: build
-        name: "Build Solution"
+        name: "Build"
         run: dotnet build --configuration "$env:CONFIGURATION" --no-restore "$env:SOLUTION_NAME"
 
       - id: test
