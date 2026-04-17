@@ -29,13 +29,9 @@ jobs:
         name: "Setup Dotnet"
         uses: actions/setup-dotnet@v5
 
-      - id: dotnet-restore
-        name: "Dotnet Restore"
-        run: dotnet restore "$env:SOLUTION_NAME"
-
       - id: build
         name: "Build"
-        run: dotnet build --configuration "$env:CONFIGURATION" --no-restore "$env:WIX_PROJ_FILE"
+        run: dotnet build --configuration "$env:CONFIGURATION" "$env:WIX_PROJ_FILE"
 
       - id: upload-release-artifact
         name: "Archive Release"
