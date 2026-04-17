@@ -2,10 +2,12 @@
 
 ## 1. Project Overview
 
-**Jira StopWatch** is a Windows desktop application for recording time spent on different Jira tasks. It provides multiple stopwatch timers that users can associate with Jira issues, then submit recorded time as worklogs directly to Jira. The project is licensed under **Apache License 2.0** and was originally authored by **Carsten Gehling**.
+**Jira StopWatch** is a Windows desktop application for recording time spent on different Jira tasks.
+It provides multiple stopwatch timers that users can associate with Jira issues, then submit recorded time as worklogs directly to Jira.
+The project is licensed under **Apache License 2.0** and was originally authored by **Carsten Gehling**.
 
 - **Product Homepage**: [jirastopwatch.com](http://jirastopwatch.com)
-- **Repository**: [github.com/tulleuchen/jirastopwatch](https://github.com/tulleuchen/jirastopwatch)
+- **Repository**: [github.com/jirastopwatch/jirastopwatch](https://github.com/jirastopwatch/jirastopwatch)
 - **Latest Version**: 2.4.0 (2026-04-14)
 - **Status**: Modernized and release-ready on .NET 10 with SDK-style projects and a WiX v5 installer.
 - **Migration**: Successfully migrated from .NET Framework 4.5 to **.NET 10 (net10.0-windows)** with SDK-style project files, updated dependencies, and modernized APIs.
@@ -15,9 +17,9 @@
 ## 2. Solution & Build Structure
 
 ### Solution Files
-| Solution | File                                         | Purpose                                              |
-| -------- | -------------------------------------------- | ---------------------------------------------------- |
-| Main     | [`StopWatch.sln`](StopWatch.sln:1)           | Contains `StopWatch` (app) + `StopWatchTest` (tests) |
+| Solution | File                                         | Purpose                                                 |
+| -------- | -------------------------------------------- | ------------------------------------------------------- |
+| Main     | [`StopWatch.sln`](StopWatch.sln:1)           | Contains `StopWatch` (app) + `StopWatchTest` (tests)    |
 | Setup    | [`StopWatchSetup.sln`](StopWatchSetup.sln:1) | WiX v5 MSI installer project (`StopWatchSetup.wixproj`) |
 
 ### Project Configuration
@@ -28,35 +30,35 @@
 - **Debug Config**: Warnings treated as errors ([`StopWatch.csproj`](source/StopWatch/StopWatch.csproj:12))
 
 ### External Dependencies
-| Package                                             | Version       | Purpose                                                      |
-| --------------------------------------------------- | ------------- | ------------------------------------------------------------ |
+| Package                                             | Version       | Purpose                                                              |
+| --------------------------------------------------- | ------------- | -------------------------------------------------------------------- |
 | [RestSharp](https://github.com/restsharp/RestSharp) | 112.1.0       | HTTP client for Jira REST API communication (via `PackageReference`) |
-| System.Configuration.ConfigurationManager          | 9.0.0         | Access to `ConfigurationManager` for application settings     |
-| System.Security.Cryptography.ProtectedData         | 9.0.0         | DPAPI wrapper for API token encryption                        |
-| NUnit                                               | 4.3.2         | Unit testing framework (test project only)                   |
-| Moq                                                 | 4.20.72       | Mocking framework (test project only)                        |
-| NUnit3TestAdapter                                   | 5.0.0         | VS test runner adapter (test project only)                   |
-| Microsoft.NET.Test.Sdk                              | 17.13.0       | Test SDK for dotnet test                                     |
+| System.Configuration.ConfigurationManager           | 9.0.0         | Access to `ConfigurationManager` for application settings            |
+| System.Security.Cryptography.ProtectedData          | 9.0.0         | DPAPI wrapper for API token encryption                               |
+| NUnit                                               | 4.3.2         | Unit testing framework (test project only)                           |
+| Moq                                                 | 4.20.72       | Mocking framework (test project only)                                |
+| NUnit3TestAdapter                                   | 5.0.0         | VS test runner adapter (test project only)                           |
+| Microsoft.NET.Test.Sdk                              | 17.13.0       | Test SDK for dotnet test                                             |
 
 ---
 
 ## 3. Architecture Overview
 
 ```
-┌─────────────────────────────────────────────────────────┐
+┌───────────────────────────────────────────────────────────┐
 │                    UI Layer (WinForms)                    │
-│  MainForm ─── IssueControl ─── WorklogForm               │
+│  MainForm ─── IssueControl ─── WorklogForm                │
 │  SettingsForm ─── EditTimeForm ─── AboutForm              │
-├─────────────────────────────────────────────────────────┤
+├───────────────────────────────────────────────────────────┤
 │               Application Core                            │
 │  Settings (Singleton) ─── WatchTimer (Model)              │
-├─────────────────────────────────────────────────────────┤
+├───────────────────────────────────────────────────────────┤
 │               Jira Integration Layer                      │
 │  JiraClient ─── JiraApiRequestFactory ─── JiraApiRequester│
-├─────────────────────────────────────────────────────────┤
+├───────────────────────────────────────────────────────────┤
 │               Infrastructure / Helpers                    │
 │  RestSharp Factories ─── DPAPI ─── Logger ─── Helpers     │
-└─────────────────────────────────────────────────────────┘
+└───────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -67,7 +69,8 @@
 
 The static [`Program`](source/StopWatch/Program.cs:25) class serves as the entry point:
 
-- **Single Instance Enforcement** (line 28): Uses a named `Mutex` (`{D5597999-20FE-430F-8E5D-8893EBED2599}`) to ensure only one instance runs. If a second instance is launched, it sends a `WM_SHOWME` broadcast message to bring the existing instance to the foreground.
+- **Single Instance Enforcement** (line 28): Uses a named `Mutex` (`{D5597999-20FE-430F-8E5D-8893EBED2599}`) to ensure only one instance runs.
+- If a second instance is launched, it sends a `WM_SHOWME` broadcast message to bring the existing instance to the foreground.
 - **TLS Security** (line 37): Forces `SecurityProtocol` to TLS 1.1/1.2 (disabling older insecure protocols).
 - **Session Lock Handling** (line 45): Subscribes to `SystemEvents.SessionSwitch` to detect desktop lock/unlock events, delegating to [`MainForm.HandleSessionLock()`](source/StopWatch/UI/MainForm.cs:69) and [`MainForm.HandleSessionUnlock()`](source/StopWatch/UI/MainForm.cs:88).
 - **Global Error Handling** (lines 42-43): Catches unhandled thread and domain exceptions, logs them to `jirastopwatch.log` in `UserAppDataPath`.
@@ -78,7 +81,8 @@ The static [`Program`](source/StopWatch/Program.cs:25) class serves as the entry
 
 ### 5.1 [`JiraClient`](source/StopWatch/Jira/JiraClient.cs:21) — High-Level API Facade
 
-The central class for all Jira operations. Uses constructor injection of [`IJiraApiRequestFactory`](source/StopWatch/Jira/IJiraApiRequestFactory.cs:21) and [`IJiraApiRequester`](source/StopWatch/Jira/IJiraApiRequester.cs:20).
+The central class for all Jira operations.
+Uses constructor injection of [`IJiraApiRequestFactory`](source/StopWatch/Jira/IJiraApiRequestFactory.cs:21) and [`IJiraApiRequester`](source/StopWatch/Jira/IJiraApiRequester.cs:20).
 
 | Method                                                       | Line | Purpose                                                      |
 | ------------------------------------------------------------ | ---- | ------------------------------------------------------------ |
@@ -96,7 +100,8 @@ The central class for all Jira operations. Uses constructor injection of [`IJira
 
 ### 5.2 [`JiraApiRequestFactory`](source/StopWatch/Jira/JiraApiRequestFactory.cs:21) — Request Builder
 
-Implements [`IJiraApiRequestFactory`](source/StopWatch/Jira/IJiraApiRequestFactory.cs:21). Creates `IRestRequest` objects for each Jira REST API v2 endpoint:
+Implements [`IJiraApiRequestFactory`](source/StopWatch/Jira/IJiraApiRequestFactory.cs:21).
+Creates `IRestRequest` objects for each Jira REST API v2 endpoint:
 
 | Endpoint                                      | Method   | Used For           |
 | --------------------------------------------- | -------- | ------------------ |
@@ -114,7 +119,8 @@ Worklog posting supports 4 estimate adjustment methods defined in [`EstimateUpda
 
 ### 5.3 [`JiraApiRequester`](source/StopWatch/Jira/JiraApiRequester.cs:23) — HTTP Executor
 
-Implements [`IJiraApiRequester`](source/StopWatch/Jira/IJiraApiRequester.cs:20). Responsible for:
+Implements [`IJiraApiRequester`](source/StopWatch/Jira/IJiraApiRequester.cs:20).
+Responsible for:
 
 - **Basic Auth** (line 67-74): Adds `Authorization: Basic <base64(username:apiToken)>` header to every request.
 - **Request Execution** (line 34): Uses [`RestClientFactory`](source/StopWatch/RestSharp/RestClientFactory.cs:21) to create RestSharp clients and execute requests.
@@ -144,17 +150,17 @@ Implements [`IJiraApiRequester`](source/StopWatch/Jira/IJiraApiRequester.cs:20).
 
 The core timer model with start/pause/reset behavior:
 
-| Member                                                       | Line | Description                                                  |
-| ------------------------------------------------------------ | ---- | ------------------------------------------------------------ |
-| [`TimeElapsed`](source/StopWatch/Model/WatchTimer.cs:34)     | 34   | Returns `totalTime + (now - sessionStartTime)` when running  |
-| [`TimeElapsedNearestMinute`](source/StopWatch/Model/WatchTimer.cs:54) | 54   | Rounds up to nearest minute (for worklog posting)            |
-| [`Running`](source/StopWatch/Model/WatchTimer.cs:62)         | 62   | Boolean indicating if timer is active                        |
-| [`Start()`](source/StopWatch/Model/WatchTimer.cs:73)         | 73   | Starts timer, records `initialStartTime` on first start      |
-| [`Pause()`](source/StopWatch/Model/WatchTimer.cs:86)         | 86   | Pauses timer, accumulates elapsed into `totalTime`           |
-| [`Reset()`](source/StopWatch/Model/WatchTimer.cs:96)         | 96   | Zeros everything, clears `initialStartTime`                  |
-| [`GetState()`](source/StopWatch/Model/WatchTimer.cs:104)     | 104  | Snapshots current state as [`TimerState`](source/StopWatch/Model/WatchTimer.cs:20) |
-| [`SetState()`](source/StopWatch/Model/WatchTimer.cs:128)     | 128  | Restores from a `TimerState` snapshot                        |
-| [`GetInitialStartTime()`](source/StopWatch/Model/WatchTimer.cs:144) | 144  | Returns the earlier of recorded vs. estimated start time (for worklog accuracy) |
+| Member                                                                | Line | Description                                                                        |
+| --------------------------------------------------------------------- | ---- | ---------------------------------------------------------------------------------- |
+| [`TimeElapsed`](source/StopWatch/Model/WatchTimer.cs:34)              | 34   | Returns `totalTime + (now - sessionStartTime)` when running                        |
+| [`TimeElapsedNearestMinute`](source/StopWatch/Model/WatchTimer.cs:54) | 54   | Rounds up to nearest minute (for worklog posting)                                  |
+| [`Running`](source/StopWatch/Model/WatchTimer.cs:62)                  | 62   | Boolean indicating if timer is active                                              |
+| [`Start()`](source/StopWatch/Model/WatchTimer.cs:73)                  | 73   | Starts timer, records `initialStartTime` on first start                            |
+| [`Pause()`](source/StopWatch/Model/WatchTimer.cs:86)                  | 86   | Pauses timer, accumulates elapsed into `totalTime`                                 |
+| [`Reset()`](source/StopWatch/Model/WatchTimer.cs:96)                  | 96   | Zeros everything, clears `initialStartTime`                                        |
+| [`GetState()`](source/StopWatch/Model/WatchTimer.cs:104)              | 104  | Snapshots current state as [`TimerState`](source/StopWatch/Model/WatchTimer.cs:20) |
+| [`SetState()`](source/StopWatch/Model/WatchTimer.cs:128)              | 128  | Restores from a `TimerState` snapshot                                              |
+| [`GetInitialStartTime()`](source/StopWatch/Model/WatchTimer.cs:144)   | 144  | Returns the earlier of recorded vs. estimated start time (for worklog accuracy)    |
 
 ### [`TimerState`](source/StopWatch/Model/WatchTimer.cs:20)
 
@@ -169,24 +175,25 @@ Serializable snapshot: `Running`, `TotalTime`, `SessionStartTime`, `InitialStart
 Thread-safe singleton using .NET `Properties.Settings` for user-scoped configuration with a lock-guarded [`Save()`](source/StopWatch/Settings/Settings.cs:145).
 
 | Setting               | Type                                                         | Default                      | Description                         |
-| --------------------- | ------------------------------------------------------------ | ---------------------------- | ----------------------------------- |
-| `JiraBaseUrl`         | string                                                       | `http://myjiraserver.local/` | Jira server URL                     |
-| `Username`            | string                                                       | empty                        | Jira username                       |
-| `ApiToken`            | string                                                       | empty                        | DPAPI-encrypted API token           |
-| `AlwaysOnTop`         | bool                                                         | false                        | Window stays on top                 |
-| `MinimizeToTray`      | bool                                                         | false                        | Minimize to system tray             |
-| `IssueCount`          | int                                                          | 6                            | Number of issue timer rows          |
-| `AllowMultipleTimers` | bool                                                         | false                        | Allow concurrent timers             |
-| `IncludeProjectName`  | bool                                                         | false                        | Show project name with summary      |
-| `SaveTimerState`      | [`SaveTimerSetting`](source/StopWatch/Settings/Settings.cs:24) | NoSave                       | Timer persistence on exit           |
+| --------------------- | ------------------------------------------------------------------- | ---------------------------- | ----------------------------------- |
+| `JiraBaseUrl`         | string                                                              | `http://myjiraserver.local/` | Jira server URL                     |
+| `Username`            | string                                                              | empty                        | Jira username                       |
+| `ApiToken`            | string                                                              | empty                        | DPAPI-encrypted API token           |
+| `AlwaysOnTop`         | bool                                                                | false                        | Window stays on top                 |
+| `MinimizeToTray`      | bool                                                                | false                        | Minimize to system tray             |
+| `IssueCount`          | int                                                                 | 6                            | Number of issue timer rows          |
+| `AllowMultipleTimers` | bool                                                                | false                        | Allow concurrent timers             |
+| `IncludeProjectName`  | bool                                                                | false                        | Show project name with summary      |
+| `SaveTimerState`      | [`SaveTimerSetting`](source/StopWatch/Settings/Settings.cs:24)      | NoSave                       | Timer persistence on exit           |
 | `PauseOnSessionLock`  | [`PauseAndResumeSetting`](source/StopWatch/Settings/Settings.cs:31) | NoPause                      | Behavior on desktop lock            |
 | `PostWorklogComment`  | [`WorklogCommentSetting`](source/StopWatch/Settings/Settings.cs:38) | WorklogOnly                  | Where to post comments              |
-| `StartTransitions`    | string                                                       | empty                        | Transition names to trigger on play |
-| `LoggingEnabled`      | bool                                                         | false                        | Enable API logging                  |
-| `CheckForUpdate`      | bool                                                         | true                         | Auto-check for updates on GitHub    |
-| `CurrentFilter`       | int                                                          | 0                            | Currently selected JQL filter ID    |
+| `StartTransitions`    | string                                                              | empty                        | Transition names to trigger on play |
+| `LoggingEnabled`      | bool                                                                | false                        | Enable API logging                  |
+| `CheckForUpdate`      | bool                                                                | true                         | Auto-check for updates on GitHub    |
+| `CurrentFilter`       | int                                                                 | 0                            | Currently selected JQL filter ID    |
 
-**Issue Persistence**: [`PersistedIssue`](source/StopWatch/Settings/PersistedIssue.cs:21) objects are serialized via **System.Text.Json** → Base64 string (migrated from BinaryFormatter). Each stores: `Key`, `TimerRunning`, `InitialStartTime`, `SessionStartTime`, `TotalTime`, `Comment`, `EstimateUpdateMethod`, `EstimateUpdateValue`.
+**Issue Persistence**: [`PersistedIssue`](source/StopWatch/Settings/PersistedIssue.cs:21) objects are serialized via **System.Text.Json** → Base64 string (migrated from BinaryFormatter).
+Each stores: `Key`, `TimerRunning`, `InitialStartTime`, `SessionStartTime`, `TotalTime`, `Comment`, `EstimateUpdateMethod`, `EstimateUpdateValue`.
 
 **Settings Upgrade**: On version change, [`Properties.Settings.Default.Upgrade()`](source/StopWatch/Settings/Settings.cs:103) is called to migrate from previous versions.
 
@@ -224,7 +231,8 @@ The main application form orchestrating everything:
 
 ### 8.2 [`IssueControl`](source/StopWatch/UI/IssueControl.cs:24) — Issue Timer Row (UserControl)
 
-Each row contains: issue combobox (`cbJira`), open-in-browser button, play/pause button, time display, post worklog button, reset button, and remove button. Key behaviors:
+Each row contains: issue combobox (`cbJira`), open-in-browser button, play/pause button, time display, post worklog button, reset button, and remove button.
+Key behaviors:
 
 - **Issue Selection** (line 485): On dropdown, loads issues from selected JQL filter via async `Task.Factory.StartNew()`.
 - **Timer Controls** (line 542): `StartStop()` toggles the [`WatchTimer`](source/StopWatch/Model/WatchTimer.cs:31) and fires `TimerStarted` event.
@@ -242,11 +250,13 @@ Each row contains: issue combobox (`cbJira`), open-in-browser button, play/pause
 
 ### 8.4 [`SettingsForm`](source/StopWatch/UI/SettingsForm.cs:25) — Configuration Dialog
 
-Exposes all user settings. Includes a link to Atlassian's API token management page ([`lblOpenAPITokensPage`](source/StopWatch/UI/SettingsForm.cs:132), line 132).
+Exposes all user settings.
+Includes a link to Atlassian's API token management page ([`lblOpenAPITokensPage`](source/StopWatch/UI/SettingsForm.cs:132), line 132).
 
 ### 8.5 [`EditTimeForm`](source/StopWatch/UI/EditTimeForm.cs:22) — Manual Time Entry
 
-Allows editing timer value in Jira time format (e.g., `2h 30m`). Validates input and highlights invalid entries.
+Allows editing timer value in Jira time format (e.g., `2h 30m`).
+Validates input and highlights invalid entries.
 
 ### 8.6 [`AboutForm`](source/StopWatch/UI/AboutForm.cs:20) — About Dialog
 
@@ -305,13 +315,14 @@ Subclasses the edit control within a ComboBox using `NativeWindow` to intercept 
 
 Factory pattern for testability, extended with wrapper interfaces for RestSharp v112+ compatibility:
 
-| Interface                                                    | Implementation                                               | Purpose                                                      |
-| ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| [`IRestClientFactory`](source/StopWatch/RestSharp/IRestClientFactory.cs:20) | [`RestClientFactory`](source/StopWatch/RestSharp/RestClientFactory.cs:21) | Creates `RestClient` with shared `CookieContainer` and configurable `BaseUrl` |
-| [`IRestClientWrapper`](source/StopWatch/RestSharp/IRestClientWrapper.cs:25) | [`RestClientWrapper`](source/StopWatch/RestSharp/RestClientWrapper.cs:25) | Wraps concrete `RestClient` to enable mocking (RestSharp v107+ removed `IRestClient`) |
-| [`IRestRequestFactory`](source/StopWatch/RestSharp/IRestRequestFactory.cs:20) | [`RestRequestFactory`](source/StopWatch/RestSharp/RestRequestFactory.cs:20) | Creates `RestRequest` with URL and method                    |
+| Interface                                                                     | Implementation                                                              | Purpose                                                                               |
+| ----------------------------------------------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| [`IRestClientFactory`](source/StopWatch/RestSharp/IRestClientFactory.cs:20)   | [`RestClientFactory`](source/StopWatch/RestSharp/RestClientFactory.cs:21)   | Creates `RestClient` with shared `CookieContainer` and configurable `BaseUrl`         |
+| [`IRestClientWrapper`](source/StopWatch/RestSharp/IRestClientWrapper.cs:25)   | [`RestClientWrapper`](source/StopWatch/RestSharp/RestClientWrapper.cs:25)   | Wraps concrete `RestClient` to enable mocking (RestSharp v107+ removed `IRestClient`) |
+| [`IRestRequestFactory`](source/StopWatch/RestSharp/IRestRequestFactory.cs:20) | [`RestRequestFactory`](source/StopWatch/RestSharp/RestRequestFactory.cs:20) | Creates `RestRequest` with URL and method                                             |
 
-**Migration Note**: RestSharp v112 introduced breaking API changes. The wrapper layer (`IRestClientWrapper`/`RestClientWrapper`) isolates the concrete `RestClient` class, allowing unit tests to mock HTTP execution while using the latest RestSharp version.
+**Migration Note**: RestSharp v112 introduced breaking API changes.
+The wrapper layer (`IRestClientWrapper`/`RestClientWrapper`) isolates the concrete `RestClient` class, allowing unit tests to mock HTTP execution while using the latest RestSharp version.
 
 ---
 
@@ -321,13 +332,13 @@ Factory pattern for testability, extended with wrapper interfaces for RestSharp 
 
 ### Test Files & Coverage
 
-| Test Class                                                   | File                         | Tests | Focus                                                        |
-| ------------------------------------------------------------ | ---------------------------- | ----- | ------------------------------------------------------------ |
-| [`JiraClientTest`](source/StopWatchTest/JiraClientTest.cs:11) | JiraClientTest.cs            | 18    | All `JiraClient` methods — success/failure paths for Authenticate, ValidateSession, GetFavoriteFilters, GetIssuesByJQL, GetIssueSummary, GetIssueTimetracking, PostWorklog, PostComment, GetAvailableTransitions, DoTransition |
-| [`JiraApiRequesterTest`](source/StopWatchTest/JiraApiRequesterTest.cs:17) | JiraApiRequesterTest.cs      | 2     | Basic auth header construction, valid/invalid credential handling |
-| [`JiraApiRequestFactoryTest`](source/StopWatchTest/JiraApiRequestFactoryTest.cs:10) | JiraApiRequestFactoryTest.cs | 10    | All request factory methods — URL construction, parameter validation, whitespace trimming |
-| [`JiraKeyHelpersTest`](source/StopWatchTest/JiraKeyHelpersTest.cs:8) | JiraKeyHelpersTest.cs        | 2     | URL-to-key parsing — match/no-match scenarios                |
-| [`JiraTimeHelpersTest`](source/StopWatchTest/JiraTimeHelpersTest.cs:10) | JiraTimeHelpersTest.cs       | 12    | DateTime formatting, timezone handling, regional settings, Jira time parsing (days/hours/minutes, decimals, whitespace) |
+| Test Class                                                                          | File                         | Tests | Focus                                                                                                                                                                                                                          |
+| ----------------------------------------------------------------------------------- | ---------------------------- | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [`JiraClientTest`](source/StopWatchTest/JiraClientTest.cs:11)                       | JiraClientTest.cs            | 18    | All `JiraClient` methods — success/failure paths for Authenticate, ValidateSession, GetFavoriteFilters, GetIssuesByJQL, GetIssueSummary, GetIssueTimetracking, PostWorklog, PostComment, GetAvailableTransitions, DoTransition |
+| [`JiraApiRequesterTest`](source/StopWatchTest/JiraApiRequesterTest.cs:17)           | JiraApiRequesterTest.cs      | 2     | Basic auth header construction, valid/invalid credential handling                                                                                                                                                              |
+| [`JiraApiRequestFactoryTest`](source/StopWatchTest/JiraApiRequestFactoryTest.cs:10) | JiraApiRequestFactoryTest.cs | 10    | All request factory methods — URL construction, parameter validation, whitespace trimming                                                                                                                                      |
+| [`JiraKeyHelpersTest`](source/StopWatchTest/JiraKeyHelpersTest.cs:8)                | JiraKeyHelpersTest.cs        | 2     | URL-to-key parsing — match/no-match scenarios                                                                                                                                                                                  |
+| [`JiraTimeHelpersTest`](source/StopWatchTest/JiraTimeHelpersTest.cs:10)             | JiraTimeHelpersTest.cs       | 12    | DateTime formatting, timezone handling, regional settings, Jira time parsing (days/hours/minutes, decimals, whitespace)                                                                                                        |
 
 Testing approach uses **Moq** to mock all interfaces (`IJiraApiRequestFactory`, `IJiraApiRequester`, `IRestClient`, `IRestClientFactory`, `IRestRequestFactory`), enabling isolated unit testing of each layer.
 
@@ -348,10 +359,12 @@ Testing approach uses **Moq** to mock all interfaces (`IJiraApiRequestFactory`, 
 
 ## 14. Configuration File ([`App.config`](source/StopWatch/App.config:1))
 
-User-scoped settings stored in the standard .NET `userSettings` section with `PerUserRoamingAndLocal` scope. Default values defined in [`App.config`](source/StopWatch/App.config:28) and [`Properties/Settings.settings`](source/StopWatch/Properties/Settings.settings).
+User-scoped settings stored in the standard .NET `userSettings` section with `PerUserRoamingAndLocal` scope.
+Default values defined in [`App.config`](source/StopWatch/App.config:28) and [`Properties/Settings.settings`](source/StopWatch/Properties/Settings.settings).
 
 ---
 
 ## 15. Documentation Site
 
-The [`docs/`](docs/) folder contains a Bootstrap-based static website (previously hosted at jirastopwatch.com, now redirects to `jirastopwatch.github.io`). The [`docs/doc/index.html`](docs/doc/index.html:1) page provides end-user documentation covering installation, basic setup, usage workflow (choosing issues, using timers, submitting worklogs), keyboard shortcuts, and advanced settings.
+The [`docs/`](docs/) folder contains a Bootstrap-based static website (previously hosted at jirastopwatch.com, now redirects to `jirastopwatch.github.io`).
+The [`docs/doc/index.html`](docs/doc/index.html:1) page provides end-user documentation covering installation, basic setup, usage workflow (choosing issues, using timers, submitting worklogs), keyboard shortcuts, and advanced settings.
