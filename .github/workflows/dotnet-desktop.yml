@@ -1,11 +1,12 @@
 name: .NET Desktop
 
 on:
+  workflow_dispatch:
   push:
-    branches: [master]
+    branches: [master,main]
     tags: ['v*']
   pull_request:
-    branches: [master]
+    branches: [master,main]
 
 permissions:
   contents: write
@@ -20,12 +21,12 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         fetch-depth: 0
 
-    - name: Install .NET 10
-      uses: actions/setup-dotnet@v4
+    - name: Install .NET
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: 10.0.x
 

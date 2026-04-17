@@ -1,0 +1,105 @@
+---
+
+name: "CodeQL"
+run-name: "CodeQL"
+
+on:
+  push:
+    branches: [ "main" ]
+
+  pull_request:
+    branches: [ "main" ]
+
+  schedule:
+    - cron: '0 0 1 * *'
+
+permissions:
+  actions: read
+  contents: read
+  security-events: write
+
+env:
+  DOTNET_NOLOGO: 1
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  CONFIGURATION: 'Release'
+  SOLUTION_NAME: 'StopWatch.sln'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.sha }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  analyze:
+    name: "Analyze (${{ matrix.language }})"
+    runs-on: ${{ matrix.runner }}
+
+    permissions:
+      security-events: write
+      packages: read
+      actions: read
+      contents: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: windows-latest
+            language: csharp
+          - runner: ubuntu-latest
+            language: actions
+
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v6
+
+      - name: "Initialize CodeQL"
+        uses: github/codeql-action/init@v4
+        with:
+          languages: ${{ matrix.language }}
+
+      - if: matrix.language == 'csharp'
+        name: "Setup Dotnet"
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 6.0.x
+
+      - if: matrix.language == 'csharp'
+        name: "Build (${{ matrix.language }})"
+        run: |
+          dotnet restore "${SOLUTION_NAME}"
+          nuget restore "${SOLUTION_NAME}"
+          dotnet build --configuration "${CONFIGURATION}" --no-restore "${SOLUTION_NAME}"
+
+      - name: "Perform CodeQL Analysis"
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: "/language:${{ matrix.language }}"
+
+  dependency-scan:
+    name: Dependency Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v6
+
+      - name: "Scan for dependencies"
+        uses: github/dependabot-action@v2
+        with:
+          sub-directory: "/"
+          open-pull-requests-limit: 5
+          package-ecosystem: "github-actions"
+          directory: "/"
+
+  #secret-scan:
+  #  name: "Secret Scan"
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - name: "Checkout"
+  #      uses: actions/checkout@v6
+  #
+  #    - name: "Scan for secrets"
+  #      uses: github/secret-scanning@v2
