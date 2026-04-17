@@ -13,6 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
+  SOLUTION_NAME: 'StopWatch.sln'
   WIX_PROJ_FILE: 'source/StopWatchSetup/StopWatchSetup.wixproj'
 
 jobs:
@@ -29,9 +30,17 @@ jobs:
         name: "Setup Dotnet"
         uses: actions/setup-dotnet@v5
 
-      - id: build
-        name: "Build"
-        run: dotnet build --configuration "$env:CONFIGURATION" "$env:WIX_PROJ_FILE"
+      - id: dotnet-restore
+        name: "Dotnet Restore"
+        run: dotnet restore "$env:SOLUTION_NAME"
+
+      - id: build-app
+        name: "Build App"
+        run: dotnet build --configuration "$env:CONFIGURATION" --no-restore "$env:SOLUTION_NAME"
+
+      - id: build-installer
+        name: "Build Installer"
+        run: dotnet build --configuration "$env:CONFIGURATION" --no-restore "$env:WIX_PROJ_FILE"
 
       - id: upload-release-artifact
         name: "Archive Release"
