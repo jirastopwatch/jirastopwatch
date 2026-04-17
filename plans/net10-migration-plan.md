@@ -103,7 +103,13 @@ Replace the entire legacy csproj with an SDK-style csproj targeting `net10.0-win
     <!-- Assembly metadata previously in AssemblyInfo.cs -->
     <AssemblyTitle>Jira StopWatch</AssemblyTitle>
     <Product>Jira StopWatch</Product>
-    <Copyright>Copyright © 2015 Carsten Gehling</Copyright>
+    <Copyright>
+      Copyright © 2026 Marco Leonor
+      Copyright © 2023 Y. Meyer-Norwood
+      Copyright © 2020 Dan Tulloh
+      Copyright © 2016 Carsten Gehling
+      https://jirastopwatch.com/humans
+    </Copyright>
     <AssemblyVersion>2.3.0</AssemblyVersion>
     <FileVersion>2.3.0</FileVersion>
     <InformationalVersion>2.3.0</InformationalVersion>
