@@ -2,18 +2,7 @@
 
 name: "Build"
 run-name: "Build"
-
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-    types:
-      - opened
-      - edited
-      - reopened
-      - synchronize
-      - ready_for_review
+on: push
 
 env:
   DOTNET_NOLOGO: 1
@@ -42,7 +31,6 @@ jobs:
     env:
       CONFIGURATION: '${{ matrix.configuration }}'
       SOLUTION_NAME: 'StopWatch.sln'
-      CSPROJECT_FILE: 'source/StopWatch/StopWatch.csproj'
       SETTINGS_FILE: '.runsettings'
       TEST_LOGGER: 'trx;logfilename=testResults.trx'
 
@@ -62,24 +50,12 @@ jobs:
         run: dotnet restore "$env:SOLUTION_NAME"
 
       - id: build
-        name: "Build"
+        name: "Build Solution"
         run: dotnet build --configuration "$env:CONFIGURATION" --no-restore "$env:SOLUTION_NAME"
 
       - id: test
         name: "Test"
         run: dotnet test --configuration "$env:CONFIGURATION" --no-restore --no-build --settings "$env:SETTINGS_FILE" --logger "$env:TEST_LOGGER" --logger "console;verbosity=detailed" "$env:SOLUTION_NAME"
-
-      - id: publish
-        name: "Publish"
-        run: dotnet publish --configuration "$env:CONFIGURATION" --no-restore --no-build "$env:CSPROJECT_FILE" --output source/StopWatch/bin/publish
-
-      - id: upload-publish-artifact
-        name: "Archive Publish"
-        uses: actions/upload-artifact@v4
-        with:
-          name: publish-${{ join(matrix.*, '-') }}
-          path: |
-            **/*.msi
 
       - id: upload-test-artifact
         if: always() && !contains(fromJSON('["cancelled", "skipped"]'), steps.test.outcome)
@@ -89,19 +65,6 @@ jobs:
           name: test-results-${{ join(matrix.*, '-') }}
           path: '**/*.trx'
           if-no-files-found: error
-
-  publish-release:
-    name: "Publish Release"
-    needs: publish-test-results
-    runs-on: ubuntu-slim
-    permissions: {}
-    steps:
-
-      - name: "Download Publish Artifacts"
-        uses: actions/download-artifact@v8
-
-      - name: "Debugger"
-        run: ls -Rl
 
   publish-test-results:
     if: always() && !contains(fromJSON('["cancelled", "skipped"]'), needs.build.result)
