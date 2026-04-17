@@ -36,6 +36,7 @@ concurrency:
 env:
   CONFIGURATION: Release
   SOLUTION_NAME: 'StopWatch.sln'
+  APP_PROJ_FILE: 'source/StopWatch/StopWatch.csproj'
   WIX_PROJ_FILE: 'source/StopWatchSetup/StopWatchSetup.wixproj'
 
 jobs:
@@ -54,13 +55,24 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
+      - id: restore
+        name: Restore
+        run: dotnet restore StopWatch.sln
+
       - id: build-app
         name: "Build App"
-        run: dotnet build --configuration "$env:CONFIGURATION" "$env:SOLUTION_NAME"
+        run: dotnet build --no-restore --configuration "$env:CONFIGURATION" "$env:SOLUTION_NAME"
+
+      - name: Test
+        run: dotnet test --no-restore --configuration "$env:CONFIGURATION" "$env:SOLUTION_NAME"
+
+      - id: publish
+        name: "Publish"
+        run: dotnet publish --no-restore --no-build --configuration "$env:CONFIGURATION" --output publish "${APP_PROJ_FILE}"
 
       - id: build-installer
         name: "Build Installer"
-        run: dotnet build --configuration "$env:CONFIGURATION" "$env:WIX_PROJ_FILE"
+        run: dotnet build --no-restore --configuration "$env:CONFIGURATION" "$env:WIX_PROJ_FILE"
 
       - id: upload-release-artifact
         name: "Archive Release"
