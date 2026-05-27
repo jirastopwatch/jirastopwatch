@@ -124,6 +124,7 @@ namespace StopWatch
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.lblHeader);
             this.Controls.Add(this.tbTime);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "EditTimeForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Edit Timer";
