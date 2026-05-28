@@ -43,34 +43,34 @@ namespace StopWatch
 
         public RestRequest CreateGetFavoriteFiltersRequest()
         {
-            var request = restRequestFactory.Create("/rest/api/2/filter/favourite", Method.Get);
+            var request = restRequestFactory.Create("/rest/api/3/filter/favourite", Method.Get);
             return request;
         }
         
 
         public RestRequest CreateGetIssuesByJQLRequest(string jql)
         {
-            var request = restRequestFactory.Create(String.Format("/rest/api/2/search?jql={0}&maxResults=200", jql), Method.Get);
+            var request = restRequestFactory.Create(String.Format("/rest/api/3/search/jql?jql={0}&maxResults=200&fields=key,summary,project,timetracking", jql), Method.Get);
             return request;
         }
 
 
         public RestRequest CreateGetIssueSummaryRequest(string key)
         {
-            var request = restRequestFactory.Create(String.Format("/rest/api/2/issue/{0}", key.Trim()), Method.Get);
+            var request = restRequestFactory.Create(String.Format("/rest/api/3/issue/{0}", key.Trim()), Method.Get);
             return request;
         }
 
         public RestRequest CreateGetIssueTimetrackingRequest(string key)
         {
-            var request = restRequestFactory.Create(String.Format("/rest/api/2/issue/{0}?fields=timetracking", key.Trim()), Method.Get);
+            var request = restRequestFactory.Create(String.Format("/rest/api/3/issue/{0}?fields=timetracking", key.Trim()), Method.Get);
             return request;
         }
 
 
         public RestRequest CreatePostWorklogRequest(string key, DateTimeOffset started, TimeSpan time, string comment, EstimateUpdateMethods adjustmentMethod, string adjustmentValue)
         {
-            var request = restRequestFactory.Create(String.Format("/rest/api/2/issue/{0}/worklog", key.Trim()), Method.Post);
+            var request = restRequestFactory.Create(String.Format("/rest/api/3/issue/{0}/worklog", key.Trim()), Method.Post);
             request.RequestFormat = DataFormat.Json;
             request.AddBody(new
                 {
@@ -100,13 +100,13 @@ namespace StopWatch
 
         public RestRequest CreateGetConfigurationRequest()
         {
-            return restRequestFactory.Create("/rest/api/2/configuration", Method.Get);
+            return restRequestFactory.Create("/rest/api/3/configuration", Method.Get);
         }
 
 
         public RestRequest CreatePostCommentRequest(string key, string comment)
         {
-            var request = restRequestFactory.Create(String.Format("/rest/api/2/issue/{0}/comment", key.Trim()), Method.Post);
+            var request = restRequestFactory.Create(String.Format("/rest/api/3/issue/{0}/comment", key.Trim()), Method.Post);
             request.RequestFormat = DataFormat.Json;
             request.AddBody(new
                 {
@@ -118,13 +118,13 @@ namespace StopWatch
 
         public RestRequest CreateGetAvailableTransitions(string key)
         {
-            var request = restRequestFactory.Create(String.Format("/rest/api/2/issue/{0}/transitions", key.Trim()), Method.Get);
+            var request = restRequestFactory.Create(String.Format("/rest/api/3/issue/{0}/transitions", key.Trim()), Method.Get);
             return request;
         }
 
         public RestRequest CreateDoTransition(string key, int transitionId)
         {
-            var request = restRequestFactory.Create(String.Format("/rest/api/2/issue/{0}/transitions", key.Trim()), Method.Post);
+            var request = restRequestFactory.Create(String.Format("/rest/api/3/issue/{0}/transitions", key.Trim()), Method.Post);
             request.RequestFormat = DataFormat.Json;
             request.AddBody(new
                 {
