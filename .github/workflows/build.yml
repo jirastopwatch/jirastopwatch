@@ -108,3 +108,10 @@ jobs:
           action_fail: true
           time_unit: milliseconds
           files: "test-results/**/*.trx"
+
+  package:
+    # todo: https://github.com/microsoft/github-actions-for-desktop-apps
+    name: "Package"
+    needs: build
+    runs-on: windows-latest
+    steps: []
