@@ -87,7 +87,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: "Scan for dependencies"
-        uses: github/dependabot-action@v2
+        uses: github/dependabot-action@v3
         with:
           sub-directory: "/"
           open-pull-requests-limit: 5
