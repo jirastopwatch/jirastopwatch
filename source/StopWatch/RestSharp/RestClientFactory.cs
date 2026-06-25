@@ -1,11 +1,12 @@
 /**
- * Copyright 2023 Y. Meyer-Norwood
- * Copyright 2020 Dan Tulloh
- * Copyright 2016 Carsten Gehling
- *
+ * Copyright © 2026 Marco Leonor
+ * Copyright © 2023 Y. Meyer-Norwood
+ * Copyright © 2020 Dan Tulloh
+ * Copyright © 2016 Carsten Gehling
+ * 
  * For a full list of contributing authors, see:
  *
- *     https://jirastopwatch.com/contributors
+ *     https://jirastopwatch.com/humans
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,13 +22,42 @@
  */
 
 using RestSharp;
+using System;
 using System.Net;
 
 namespace StopWatch
 {
     internal class RestClientFactory : IRestClientFactory
     {
-        public string BaseUrl { get; set; }
+        private string _baseUrl = "";
+
+        public string BaseUrl
+        {
+            get { return _baseUrl; }
+            set
+            {
+                // Normalize Jira Cloud URLs: strip path components like /jira/ so that
+                // API resource paths (e.g. /rest/api/2/myself) resolve correctly against
+                // the host root. RestSharp v112 concatenates base URL path + resource path
+                // instead of resolving the resource as an absolute path from the host.
+                if (!string.IsNullOrEmpty(value))
+                {
+                    try
+                    {
+                        var uri = new Uri(value.TrimEnd('/'));
+                        _baseUrl = uri.GetLeftPart(UriPartial.Authority);
+                    }
+                    catch (UriFormatException)
+                    {
+                        _baseUrl = value;
+                    }
+                }
+                else
+                {
+                    _baseUrl = value ?? "";
+                }
+            }
+        }
 
         public RestClientFactory()
         {
@@ -36,14 +66,21 @@ namespace StopWatch
         }
 
 
-        public IRestClient Create(bool invalidateCookies = false)
+        public IRestClientWrapper Create(bool invalidateCookies = false)
         {
             if (invalidateCookies)
                 cookieContainer = new CookieContainer();
 
-            RestClient client = new RestClient(BaseUrl);
-            //client.CookieContainer = cookieContainer;
-            return client;
+            var options = new RestClientOptions(BaseUrl)
+            {
+                CookieContainer = cookieContainer,
+                // Disable automatic redirect following so that 302 redirects to the
+                // Jira Cloud login page are surfaced as non-200 status codes instead of
+                // being silently followed and returning 200 + HTML.
+                FollowRedirects = false
+            };
+            RestClient client = new RestClient(options);
+            return new RestClientWrapper(client);
         }
 
         private CookieContainer cookieContainer;

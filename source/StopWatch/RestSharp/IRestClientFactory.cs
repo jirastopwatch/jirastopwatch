@@ -1,11 +1,12 @@
 /**
- * Copyright 2023 Y. Meyer-Norwood
- * Copyright 2020 Dan Tulloh
- * Copyright 2016 Carsten Gehling
- *
+ * Copyright © 2026 Marco Leonor
+ * Copyright © 2023 Y. Meyer-Norwood
+ * Copyright © 2020 Dan Tulloh
+ * Copyright © 2016 Carsten Gehling
+ * 
  * For a full list of contributing authors, see:
  *
- *     https://jirastopwatch.com/contributors
+ *     https://jirastopwatch.com/humans
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +21,12 @@
  * limitations under the License.
  */
 
-using RestSharp;
-
 namespace StopWatch
 {
     internal interface IRestClientFactory
     {
         string BaseUrl { get; set; }
 
-        IRestClient Create(bool invalidateCookies = false);
+        IRestClientWrapper Create(bool invalidateCookies = false);
     }
 }

@@ -69,7 +69,7 @@ namespace StopWatch
         }
 
         // Wrapper for the NULL handle or pointer.
-        static private IntPtr NullPtr = ((IntPtr)((int)(0)));
+        static private IntPtr NullPtr = IntPtr.Zero;
 
         // DPAPI key initialization flags.
         private const int CRYPTPROTECT_UI_FORBIDDEN  = 0x1;

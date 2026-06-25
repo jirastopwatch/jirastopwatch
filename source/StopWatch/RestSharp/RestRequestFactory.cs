@@ -1,11 +1,12 @@
 /**
- * Copyright 2023 Y. Meyer-Norwood
- * Copyright 2020 Dan Tulloh
- * Copyright 2016 Carsten Gehling
- *
+ * Copyright © 2026 Marco Leonor
+ * Copyright © 2023 Y. Meyer-Norwood
+ * Copyright © 2020 Dan Tulloh
+ * Copyright © 2016 Carsten Gehling
+ * 
  * For a full list of contributing authors, see:
  *
- *     https://jirastopwatch.com/contributors
+ *     https://jirastopwatch.com/humans
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +27,7 @@ namespace StopWatch
 {
     internal class RestRequestFactory : IRestRequestFactory
     {
-        public virtual RestRequest Create(string url, Method method)
+        public RestRequest Create(string url, Method method)
         {
             return new RestRequest(url, method);
         }

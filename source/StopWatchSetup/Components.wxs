@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Fragment>
+    <!-- Application files from publish directory -->
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <Component Id="StopWatchExe" Guid="D7C5A8F3-1234-4567-89AB-CD1234567890">
+        <File Id="StopWatchExe" Source="$(var.StopWatchPublishDir)StopWatch.exe" KeyPath="yes" />
+      </Component>
+      <Component Id="StopWatchDll" Guid="D7C5A8F4-1234-4567-89AB-CD1234567891">
+        <File Id="StopWatchDll" Source="$(var.StopWatchPublishDir)StopWatch.dll" KeyPath="yes" />
+      </Component>
+      <Component Id="StopWatchConfig" Guid="D7C5A8F5-1234-4567-89AB-CD1234567892">
+        <File Id="StopWatchConfig" Source="$(var.StopWatchPublishDir)StopWatch.dll.config" KeyPath="yes" />
+      </Component>
+      <Component Id="StopWatchRuntimeConfig" Guid="D7C5A8F6-1234-4567-89AB-CD1234567893">
+        <File Id="StopWatchRuntimeConfig" Source="$(var.StopWatchPublishDir)StopWatch.runtimeconfig.json" KeyPath="yes" />
+      </Component>
+      <Component Id="StopWatchDepsJson" Guid="D7C5A8F7-1234-4567-89AB-CD1234567894">
+        <File Id="StopWatchDepsJson" Source="$(var.StopWatchPublishDir)StopWatch.deps.json" KeyPath="yes" />
+      </Component>
+      <Component Id="RestSharpDll" Guid="D7C5A8F8-1234-4567-89AB-CD1234567895">
+        <File Id="RestSharpDll" Source="$(var.StopWatchPublishDir)RestSharp.dll" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+
+    <!-- Application Start Menu shortcut -->
+    <Component Id="ApplicationShortcut" Guid="D7C5A8F9-1234-4567-89AB-CD1234567896" Directory="ApplicationProgramsFolder">
+      <Shortcut
+        Id="ApplicationStartMenuShortcut"
+        Name="Jira StopWatch"
+        Description="Record time spent on Jira tasks"
+        Target="[INSTALLFOLDER]StopWatch.exe"
+        WorkingDirectory="INSTALLFOLDER" />
+      <RemoveFolder Id="CleanUpShortCutFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
+      <RegistryValue
+        Root="HKCU"
+        Key="Software\Carsten Gehling\Jira StopWatch"
+        Name="installed"
+        Type="integer"
+        Value="1"
+        KeyPath="yes" />
+    </Component>
+
+    <!-- License file in install folder -->
+    <Component Id="LicenseFile" Guid="D7C5A8FA-1234-4567-89AB-CD1234567897" Directory="INSTALLFOLDER">
+      <File
+        Id="LicenseTxt"
+        Source="..\..\LICENSE.md"
+        KeyPath="yes" />
+    </Component>
+  </Fragment>
+</Wix>

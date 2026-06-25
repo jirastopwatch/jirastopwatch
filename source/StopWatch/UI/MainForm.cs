@@ -1,11 +1,12 @@
 /**
- * Copyright 2023 Y. Meyer-Norwood
- * Copyright 2020 Dan Tulloh
- * Copyright 2016 Carsten Gehling
- *
+ * Copyright © 2026 Marco Leonor
+ * Copyright © 2023 Y. Meyer-Norwood
+ * Copyright © 2020 Dan Tulloh
+ * Copyright © 2016 Carsten Gehling
+ * 
  * For a full list of contributing authors, see:
  *
- *     https://jirastopwatch.com/contributors
+ *     https://jirastopwatch.com/humans
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,7 +62,8 @@ namespace StopWatch
             pMain.VerticalScroll.Visible = false;
             pMain.AutoScroll = true;
 
-            Text = string.Format("{0} v. {1}", Application.ProductName, Application.ProductVersion);
+            Text = string.Format("{0} v. {1}", Application.ProductName, Application.ProductVersion.Split('+')[0]);
+            SyncMainLayoutWidths();
 
             cbFilters.DropDownStyle = ComboBoxStyle.DropDownList;
             cbFilters.DisplayMember = "Name";
@@ -165,10 +167,19 @@ namespace StopWatch
 
         private void MainForm_Shown(object sender, EventArgs e)
         {
+            // Set TopMost based on user settings (default is false for first run)
+            this.TopMost = this.settings.AlwaysOnTop;
+
             if (this.settings.FirstRun)
             {
                 this.settings.FirstRun = false;
+                // Temporarily disable TopMost when showing settings dialog on first run
+                // to prevent the main window from overlapping the settings window
+                if (this.settings.AlwaysOnTop)
+                    this.TopMost = false;
                 EditSettings();
+                // Restore TopMost setting after settings dialog closes
+                this.TopMost = this.settings.AlwaysOnTop;
             }
             else
             {
@@ -224,6 +235,8 @@ namespace StopWatch
 
         private void MainForm_Resize(object sender, EventArgs e)
         {
+            SyncMainLayoutWidths();
+
             // Mono for MacOSX and Linux do not implement the notifyIcon
             // so ignore this feature if we are not running on Windows
             if (!CrossPlatformHelpers.IsWindowsEnvironment())
@@ -394,6 +407,7 @@ namespace StopWatch
             
             pMain.Height = ClientSize.Height - pTop.Height - pBottom.Height;
             pBottom.Top = ClientSize.Height - pBottom.Height;
+            SyncMainLayoutWidths();
 
             this.TopMost = this.settings.AlwaysOnTop;
 
@@ -405,6 +419,25 @@ namespace StopWatch
             this.ResumeLayout(false);
             this.PerformLayout();
             UpdateIssuesOutput(true);
+        }
+
+        private void SyncMainLayoutWidths()
+        {
+            int width = this.ClientSize.Width;
+            int rightPadding = 12;
+            int toolbarGap = 12;
+
+            pTop.Width = width;
+            pMain.Width = width;
+            pBottom.Width = width;
+            lblDivider.Width = width;
+
+            pbHelp.Left = width - rightPadding - pbHelp.Width;
+            pbAddIssue.Left = pbHelp.Left - toolbarGap - pbAddIssue.Width;
+            pbSettings.Left = width - rightPadding - pbSettings.Width;
+
+            foreach (IssueControl issue in this.issueControls)
+                issue.Width = this.pMain.ClientSize.Width;
         }
 
         private void Issue_TimeEdited(object sender, EventArgs e)
@@ -582,9 +615,53 @@ namespace StopWatch
             Task.Factory.StartNew(
                 () =>
                 {
-                    List<Filter> filters = jiraClient.GetFavoriteFilters();
+                    Logger.Instance.Log("LoadFilters: calling GetFavoriteFilters...");
+                    List<Filter> filters = null;
+                    try
+                    {
+                        filters = jiraClient.GetFavoriteFilters();
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Instance.Log(string.Format("LoadFilters: unexpected exception: {0}", ex.Message), ex);
+                    }
+
+                    Logger.Instance.Log(string.Format("LoadFilters: result is {0}",
+                        filters == null ? "null" : string.Format("List<Filter> with {0} items", filters.Count)));
+
                     if (filters == null)
+                    {
+                        // Show UI warning to user instead of silently returning
+                        string jiraError = jiraClient.ErrorMessage;
+                        Logger.Instance.Log(string.Format("LoadFilters: jiraClient.ErrorMessage = '{0}'", jiraError ?? "(null)"));
+
+                        this.InvokeIfRequired(
+                            () =>
+                            {
+                                // Set a tooltip on the filter dropdown to indicate loading failure
+                                string errorMsg = !string.IsNullOrEmpty(jiraError)
+                                    ? jiraError
+                                    : "Could not load filters from JIRA. Check your connection and credentials.";
+                                ttMain.SetToolTip(cbFilters, errorMsg);
+                                
+                                // Also update connection status if not already showing error
+                                if (jiraClient.SessionValid)
+                                {
+                                    lblConnectionStatus.Text = "Filter load failed";
+                                    lblConnectionStatus.ForeColor = System.Drawing.Color.Red;
+                                }
+                            }
+                        );
                         return;
+                    }
+
+                    this.InvokeIfRequired(
+                        () =>
+                        {
+                            // Clear any previous error tooltip on successful load
+                            ttMain.SetToolTip(cbFilters, "Select a filter for issue search");
+                        }
+                    );
 
                     filters.Insert(0, new Filter
                     {
@@ -676,7 +753,7 @@ namespace StopWatch
                                 latestRelease.TagName,
                                 currentVersion);
                             if (MessageBox.Show(msg, "New version available", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                                System.Diagnostics.Process.Start("https://github.com/jirastopwatch/jirastopwatch/releases/latest");
+                                System.Diagnostics.Process.Start(new ProcessStartInfo("https://github.com/jirastopwatch/jirastopwatch/releases/latest") { UseShellExecute = true });
                         }
                     );
                 }
@@ -711,7 +788,7 @@ namespace StopWatch
             }
         }
 
-        private Timer ticker;
+        private System.Windows.Forms.Timer ticker;
 
         private JiraApiRequestFactory jiraApiRequestFactory;
         private RestRequestFactory restRequestFactory;
@@ -904,7 +981,7 @@ namespace StopWatch
 
         private void pbHelp_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("http://jirastopwatch.com/doc");
+            System.Diagnostics.Process.Start(new ProcessStartInfo("http://jirastopwatch.com/doc") { UseShellExecute = true });
         }
     }
 

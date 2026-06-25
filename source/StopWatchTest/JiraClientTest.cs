@@ -1,11 +1,12 @@
 /**
- * Copyright 2023 Y. Meyer-Norwood
- * Copyright 2020 Dan Tulloh
- * Copyright 2016 Carsten Gehling
- *
+ * Copyright © 2026 Marco Leonor
+ * Copyright © 2023 Y. Meyer-Norwood
+ * Copyright © 2020 Dan Tulloh
+ * Copyright © 2016 Carsten Gehling
+ * 
  * For a full list of contributing authors, see:
  *
- *     https://jirastopwatch.com/contributors
+ *     https://jirastopwatch.com/humans
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -261,6 +262,116 @@ namespace StopWatchTest
             jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<object>(It.IsAny<RestRequest>())).Throws<RequestDeniedException>();
             Assert.That(jiraClient.DoTransition("DG-42", 6), Is.False);
         }
+
+
+        #region JIRA Cloud Compatibility Tests
+
+        [Test, Description("ValidateSession: Uses /rest/api/2/myself endpoint for JIRA Cloud compatibility")]
+        public void ValidateSession_Uses_Myself_Endpoint_For_Cloud_Compatibility()
+        {
+            // Arrange
+            RestRequest capturedRequest = null;
+            jiraApiRequestFactoryMock.Setup(f => f.CreateValidateSessionRequest())
+                .Returns(() => {
+                    capturedRequest = new RestRequest("/rest/api/2/myself", Method.Get);
+                    return capturedRequest;
+                });
+            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<object>(It.IsAny<RestRequest>())).Returns(new object());
+
+            // Act
+            jiraClient.ValidateSession();
+
+            // Assert - verify that CreateValidateSessionRequest was called (factory creates correct endpoint)
+            jiraApiRequestFactoryMock.Verify(f => f.CreateValidateSessionRequest(), Times.Once);
+        }
+
+
+        [Test, Description("GetFavoriteFilters: Uses /rest/api/2/filter/favourites endpoint for JIRA Cloud compatibility")]
+        public void GetFavoriteFilters_Uses_Favourites_Endpoint_For_Cloud_Compatibility()
+        {
+            // Arrange
+            List<Filter> returnData = new List<Filter>
+            {
+                new Filter { Id = 1, Name = "My Filter", Jql = "project = TEST" }
+            };
+            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<List<Filter>>(It.IsAny<RestRequest>())).Returns(returnData);
+
+            // Act
+            var result = jiraClient.GetFavoriteFilters();
+
+            // Assert - verify the correct factory method was called
+            jiraApiRequestFactoryMock.Verify(f => f.CreateGetFavoriteFiltersRequest(), Times.Once);
+            Assert.That(result, Is.EqualTo(returnData));
+        }
+
+
+        [Test, Description("GetFavoriteFilters: Returns empty list instead of null when API returns empty array")]
+        public void GetFavoriteFilters_Returns_Empty_List_When_Api_Returns_Empty()
+        {
+            // Arrange
+            List<Filter> emptyList = new List<Filter>();
+            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<List<Filter>>(It.IsAny<RestRequest>())).Returns(emptyList);
+
+            // Act
+            var result = jiraClient.GetFavoriteFilters();
+
+            // Assert
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result, Is.Empty);
+        }
+
+
+        [Test, Description("GetFavoriteFilters: Preserves error message from requester on failure")]
+        public void GetFavoriteFilters_Preserves_ErrorMessage_On_Failure()
+        {
+            // Arrange
+            string expectedError = "HTTP 401: {\"errorMessages\":[\"You do not have the permission to see the specified issue.\"],\"errors\":{}}";
+            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<List<Filter>>(It.IsAny<RestRequest>())).Throws<RequestDeniedException>();
+            jiraApiRequesterMock.SetupGet(m => m.ErrorMessage).Returns(expectedError);
+
+            // Act
+            var result = jiraClient.GetFavoriteFilters();
+
+            // Assert
+            Assert.That(result, Is.Null);
+            jiraApiRequesterMock.VerifyGet(m => m.ErrorMessage, Times.AtLeastOnce);
+        }
+
+
+        [Test, Description("GetIssuesByJQL: Handles special characters in JQL through URL encoding")]
+        public void GetIssuesByJQL_Handles_Special_Characters_In_Jql()
+        {
+            // Arrange
+            string jqlWithSpecialChars = "summary ~ \"test & bug\" AND priority = High";
+            SearchResult returnData = new SearchResult { Issues = new List<Issue>() };
+            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<SearchResult>(It.IsAny<RestRequest>())).Returns(returnData);
+
+            // Act
+            var result = jiraClient.GetIssuesByJQL(jqlWithSpecialChars);
+
+            // Assert - verify the factory method was called with JQL containing special chars
+            jiraApiRequestFactoryMock.Verify(f => f.CreateGetIssuesByJQLRequest(It.Is<string>(jql => jql == jqlWithSpecialChars)), Times.Once);
+        }
+
+
+        [Test, Description("ValidateSession: Sets ErrorMessage from requester on authentication failure")]
+        public void ValidateSession_Sets_ErrorMessage_On_Auth_Failure()
+        {
+            // Arrange
+            string expectedError = "HTTP 401: {\"errorMessages\":[\"User is not authenticated\"]}";
+            jiraApiRequesterMock.Setup(m => m.DoAuthenticatedRequest<object>(It.IsAny<RestRequest>())).Throws<RequestDeniedException>();
+            jiraApiRequesterMock.SetupGet(m => m.ErrorMessage).Returns(expectedError);
+
+            // Act
+            var result = jiraClient.ValidateSession();
+
+            // Assert
+            Assert.That(result, Is.False);
+            Assert.That(jiraClient.SessionValid, Is.False);
+            Assert.That(jiraClient.ErrorMessage, Is.EqualTo(expectedError));
+        }
+
+        #endregion
 
 
     }

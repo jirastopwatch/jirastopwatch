@@ -1,11 +1,12 @@
 /**
- * Copyright 2023 Y. Meyer-Norwood
- * Copyright 2020 Dan Tulloh
- * Copyright 2016 Carsten Gehling
- *
+ * Copyright © 2026 Marco Leonor
+ * Copyright © 2023 Y. Meyer-Norwood
+ * Copyright © 2020 Dan Tulloh
+ * Copyright © 2016 Carsten Gehling
+ * 
  * For a full list of contributing authors, see:
  *
- *     https://jirastopwatch.com/contributors
+ *     https://jirastopwatch.com/humans
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +29,7 @@ namespace StopWatchTest
     using StopWatch;
     using System.Linq;
     using System.Net;
+    using System.Threading.Tasks;
 
     internal class TestPocoClass
     {
@@ -38,7 +40,7 @@ namespace StopWatchTest
     [TestFixture]
     public class JiraApiRequesterTest
     {
-        private Mock<IRestClient> clientMock;
+        private Mock<IRestClientWrapper> clientMock;
         private Mock<IRestClientFactory> clientFactoryMock;
 
         private Mock<IJiraApiRequestFactory> jiraApiRequestFactoryMock;
@@ -48,7 +50,7 @@ namespace StopWatchTest
         [SetUp]
         public void Setup()
         {
-            clientMock = new Mock<IRestClient>();
+            clientMock = new Mock<IRestClientWrapper>();
 
             clientFactoryMock = new Mock<IRestClientFactory>();
             clientFactoryMock.Setup(c => c.Create(It.IsAny<bool>())).Returns(clientMock.Object);
@@ -99,8 +101,7 @@ namespace StopWatchTest
 
             var requestMock = new RestRequest();
 
-            //TODO Check the setup, Execute is a static class which cant be mocked here
-            clientMock.Setup(c => c.Execute<TestPocoClass>(It.IsAny<RestRequest>())).Returns(() => TestAuth(requestMock, valid_username, valid_apitoken));
+            clientMock.Setup(c => c.ExecuteAsync<TestPocoClass>(It.IsAny<RestRequest>())).Returns(() => Task.FromResult(TestAuth(requestMock, valid_username, valid_apitoken)));
 
             jiraApiRequester.SetAuthentication(valid_username, valid_apitoken);
 
@@ -119,8 +120,7 @@ namespace StopWatchTest
 
             var requestMock = new RestRequest();
 
-            //TODO Check the setup, Execute is a static class which cant be mocked here
-            clientMock.Setup(c => c.Execute<TestPocoClass>(It.IsAny<RestRequest>())).Returns(() => TestAuth(requestMock, valid_username, valid_apitoken));
+            clientMock.Setup(c => c.ExecuteAsync<TestPocoClass>(It.IsAny<RestRequest>())).Returns(() => Task.FromResult(TestAuth(requestMock, valid_username, valid_apitoken)));
 
             jiraApiRequester.SetAuthentication("invalidUsername", "invalidApiToken");
 

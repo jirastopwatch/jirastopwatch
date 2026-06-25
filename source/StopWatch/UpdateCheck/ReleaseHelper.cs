@@ -1,11 +1,12 @@
 /**
- * Copyright 2023 Y. Meyer-Norwood
- * Copyright 2020 Dan Tulloh
- * Copyright 2016 Carsten Gehling
- *
+ * Copyright © 2026 Marco Leonor
+ * Copyright © 2023 Y. Meyer-Norwood
+ * Copyright © 2020 Dan Tulloh
+ * Copyright © 2016 Carsten Gehling
+ * 
  * For a full list of contributing authors, see:
  *
- *     https://jirastopwatch.com/contributors
+ *     https://jirastopwatch.com/humans
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,10 +30,15 @@ namespace StopWatch
     {
         public static GithubRelease GetLatestVersion()
         {
-            RestClient client = new RestClient("https://api.github.com");
+            var options = new RestClientOptions("https://api.github.com")
+            {
+                UserAgent = "jirastopwatch"
+            };
+            RestClient client = new RestClient(options);
             RestRequest request = new RestRequest("/repos/jirastopwatch/jirastopwatch/releases/latest");
 
-            RestResponse<GithubRelease> response = client.Execute<GithubRelease>(request);
+            // RestSharp v112+ is async-only; use .GetAwaiter().GetResult() for sync context
+            RestResponse<GithubRelease> response = client.ExecuteAsync<GithubRelease>(request).GetAwaiter().GetResult();
             if (response.StatusCode != HttpStatusCode.OK)
                 return null;
 
